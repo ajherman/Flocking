@@ -170,6 +170,7 @@ def animate(X,save=False,show=True):
     ani = matplotlib.animation.FuncAnimation(fig,update,frames=range(num_iters),interval=20)
     if save:
         ani.save(fname+".mp4",fps=20)
+        np.save(fname,X)
     if show:
         plt.show()
 
