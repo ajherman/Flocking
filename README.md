@@ -1,8 +1,9 @@
 # Flocking
 Create and analyze flocking simulations
 
-This is a test to see if I understand how to push/pull.
+Some projects:
 
-Now I'm going to try pushing a specific branch that doesn't yet exist on the oinline repo.
-
-Okay, that worked.  Now let's see if it works to just do a simple push without the branch name.
+1) Re-implement using tensorflow
+2) Put animate() into a separate file [and general make things more modular]
+3) Figure out what causes the cool chain reaction thing
+4) Make more natural flocking simulations
