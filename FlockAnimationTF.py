@@ -42,6 +42,8 @@ num_boids,num_iters,dim = 3,4,2
 
 X = tf.Variable(tf.zeros((num_iters,num_boids,dim)))
 diffs = tf.Variable(tf.random_uniform((num_boids,num_boids,dim)))
+q = tf.Variable(tf.random_uniform((num_boids,dim)))
+p = tf.Variable(tf.random_uniform((num_boids,dim)))
 init_vars = tf.global_variables_initializer()
 
 #####################
@@ -69,6 +71,12 @@ def phi_a(z):
 def differences(q):
     return q[:,None,:] - q
 
+def uUpdate(q,p):
+    diff=differences(q)
+    norms = sig_norm(diff)
+    diffp=differences(p)
+    return tf.reduce_sum(phi_a(norms)*sig_grad(diff,norms),axis=0)+np.sum(rho_h(norms/r_a)*diffp,axis=0)
+
 ####################
 # Compute trajectory
 ####################
@@ -78,6 +86,7 @@ r=rho_h(diffs)
 p=phi(diffs)
 pa = phi_a(diffs)
 d = differences(diffs)
+u = uUpdate(q,p)
 
 ##################
 # Begin tf session
@@ -86,13 +95,16 @@ d = differences(diffs)
 sess = tf.Session() # Start session
 sess.run(init_vars) # Initialize variables
 
-tf_diff = sess.run(diffs) 
+tf_diff = sess.run(diffs)
+tf_q = sess.run(q)
+tf_p = sess.run(p)
 tf_norm = sess.run(norm)
 tf_grad = sess.run(grad)
 tf_r = sess.run(r)
 tf_p = sess.run(p)
 tf_pa = sess.run(pa)
 tf_d = sess.run(d)
+tf_u = sess.run(u)
 
 ##################
 # Useful functions
@@ -120,13 +132,22 @@ def np_phi_a(z):
 def np_differences(q):
     return q[:,None,:] - q
 
+def np_uUpdate(q,p):
+    diff=differences(q)
+    norms = sig_norm(diff)
+    diffp=differences(p)
+    return np.sum(phi_a(norms)*sig_grad(diff,norms),axis=0)+np.sum(rho_h(norms/r_a)*diffp,axis=0)
+
 np_diff = tf_diff
+np_q = tf_q
+np_p = tf_p
 np_norm = np_sig_norm(np_diff)
 np_grad = np_sig_grad(np_diff,np_norm)
 np_r = np_rho_h(np_diff)
 np_p = np_phi(np_diff)
 np_pa = np_phi_a(np_diff)
 np_d = np_differences(np_diff)
+np_u = np_uUpdate(np_q,np_p)
 
 print("diff")
 print(np_diff-tf_diff)
@@ -142,13 +163,9 @@ print("phi_a")
 print(np_pa-tf_pa)
 print("differences")
 print(np_d-tf_d)
+print("update")
+print(np_u-tf_u)
 
-#
-#def uUpdate(q,p):
-#    diff=differences(q)
-#    norms = sig_norm(diff)
-#    diffp=differences(p)
-#    return np.sum(phi_a(norms)*sig_grad(diff,norms),axis=0)+np.sum(rho_h(norms/r_a)*diffp,axis=0)
 #
 #def differentiate(v):
 #    dv = v.copy()
