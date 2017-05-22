@@ -41,6 +41,9 @@ if save=='y':
 ##################
 
 def sig_norm(z): # Sigma norm
+    print(np.shape(z))
+    r=(np.sqrt(1+eps*np.sum(z**2,axis=2).reshape((num_boids,num_boids,1)))-1)/eps
+    print(np.shape(r))
     return (np.sqrt(1+eps*np.sum(z**2,axis=2).reshape((num_boids,num_boids,1)))-1)/eps
 
 def sig_grad(z,norm=None,eps=eps): # Gradient of sigma norm
