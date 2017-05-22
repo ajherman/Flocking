@@ -38,10 +38,10 @@ c_p=5
 #if save=='y':
 #    fname = input("Type file name [no extension]: ")
 
-num_boids,num_iters,dim = 5,10,2
+num_boids,num_iters,dim = 3,4,2
 
 X = tf.Variable(tf.zeros((num_iters,num_boids,dim)))
-Y = tf.Variable(tf.random_uniform((num_boids,num_boids,dim)))
+diffs = tf.Variable(tf.random_uniform((num_boids,num_boids,dim)))
 init_vars = tf.initialize_all_variables()
 
 #####################
@@ -60,41 +60,57 @@ def sig_grad(z,norm=None,eps=eps):
 ####################
 # Compute trajectory
 ####################
-norm = sig_norm(Y)
-grad = sig_grad(Y,norm)
+norm = sig_norm(diffs)
+grad = sig_grad(diffs,norm)
 
 ##################
 # Begin tf session
 ##################
 
-sess = tf.Session()
-sess.run(init_vars)
-resultX = sess.run(X)
-resultY = sess.run(Y)
-result_norm = sess.run(norm)
-result_grad = sess.run(grad)
-print(resultX)
-print(resultY)
-print(result_norm)
-print(result_grad)
+sess = tf.Session() # Start session
+sess.run(init_vars) # Initialize variables
+
+tf_diff = sess.run(diffs) 
+tf_norm = sess.run(norm)
+tf_grad = sess.run(grad)
+
+print("tf diff")
+print(tf_diff)
+print("tf norm")
+print(tf_norm)
+print("tf grad")
+print(tf_grad)
 
 
 
-#
-###################
-## Useful functions
-###################
-#
-#def sig_norm(z): # Sigma norm
-#    return (tf.sqrt(1+eps*np.reduce_sum(z**2,axis=2).reshape((num_boids,num_boids,1)))-1)/eps
-#
-#def sig_grad(z,norm=None,eps=eps): # Gradient of sigma norm
-#    if type(norm) == "NoneType":
-#        return z/(1+eps*sig_norm(z))
-#    else:
-#        return z/(1+eps*norm)
-#    
+
+##################
+# Useful functions
+##################
+
+def np_sig_norm(z): # Sigma norm
+    return (np.sqrt(1+eps*np.sum(z**2,axis=2).reshape((num_boids,num_boids,1)))-1)/eps
+
+def np_sig_grad(z,norm=None,eps=eps): # Gradient of sigma norm
+    if type(norm) == "NoneType":
+        return z/(1+eps*sig_norm(z))
+    else:
+        return z/(1+eps*norm)
+
+np_diff = tf_diff
+np_norm = np_sig_norm(np_diff)
+np_grad = np_sig_grad(np_diff,np_norm)
+
+print("np diff")
+print(np_diff)
+print("np norm")
+print(np_norm)
+print("np grad")
+print(np_grad)
+
+
 #def rho_h(z):
+#    return (np.sqrt(1+eps*np.sum(z**2,axis=2).reshape((num_boids,num_boids,1)))-1)/eps
 #    return  tf.logical_and(z>=0,z<h)+tf.logical_and(z<=1,z>=h)*(0.5*(1+np.cos(np.pi*(z-h)/(1-h))))
 #
 #def phi(z):
