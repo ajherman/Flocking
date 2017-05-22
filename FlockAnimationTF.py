@@ -146,7 +146,6 @@ X = tf.concat(1,[X,q_g[:,None,:]])
 sess = tf.Session() # Start session
 sess.run(tf.global_variables_initializer()) # Initialize variables
 res = sess.run(X)
-print(res)
 
 def animate(X,save=False,show=True):
     num_iters,num_points,dim = np.shape(X)
