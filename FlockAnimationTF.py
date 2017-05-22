@@ -74,7 +74,7 @@ def differentiate(v):
     dv = tf.identity(v)
     dv = dv[1:] - v[:-1]
     zeros = tf.zeros((dv[:1]).get_shape())
-    dv = tf.concat(0,[zeros,dv])  # I think this the argument order is reversed in newer tf
+    dv = tf.concat([zeros,dv],0)  # I think this the argument order is reversed in newer tf
     return dv/dt
 
 
@@ -133,10 +133,10 @@ X = tf.zeros((0,num_boids,dim))
 for i in range(num_iters):
     z=uUpdate(q,p)
     q+=p*dt
-    X = tf.concat(0,[X,tf.expand_dims(q,axis=0)])
+    X = tf.concat([X,tf.expand_dims(q,axis=0)],0)
     p+=(z-c_q*(q-q_g[i])-c_p*(p-p_g[i]))*dt
 # Add the gamma agent
-X = tf.concat(1,[X,q_g[:,None,:]]) 
+X = tf.concat([X,q_g[:,None,:]],1) 
 
 
 ##################
