@@ -42,7 +42,7 @@ num_boids,num_iters,dim = 3,4,2
 
 X = tf.Variable(tf.zeros((num_iters,num_boids,dim)))
 diffs = tf.Variable(tf.random_uniform((num_boids,num_boids,dim)))
-init_vars = tf.initialize_all_variables()
+init_vars = tf.global_variables_initializer()
 
 #####################
 # Useful tf functions
@@ -57,11 +57,20 @@ def sig_grad(z,norm=None,eps=eps):
     else:
         return z/(1+eps*norm)
 
+def rho_h(z):
+    return tf.to_float(tf.logical_and(z>=0,z<h))+tf.to_float(tf.logical_and(z<=1,z>=h))*(0.5*(1+tf.cos(np.pi*(z-h)/(1-h))))
+
+
+def phi(z):
+    return 0.5*((a+b)*sig_grad(z+c,1)+(a-b))
+
 ####################
 # Compute trajectory
 ####################
 norm = sig_norm(diffs)
 grad = sig_grad(diffs,norm)
+r=rho_h(diffs)
+p=phi(diffs)
 
 ##################
 # Begin tf session
@@ -73,16 +82,8 @@ sess.run(init_vars) # Initialize variables
 tf_diff = sess.run(diffs) 
 tf_norm = sess.run(norm)
 tf_grad = sess.run(grad)
-
-print("tf diff")
-print(tf_diff)
-print("tf norm")
-print(tf_norm)
-print("tf grad")
-print(tf_grad)
-
-
-
+tf_r = sess.run(r)
+tf_p = sess.run(p)
 
 ##################
 # Useful functions
@@ -97,25 +98,30 @@ def np_sig_grad(z,norm=None,eps=eps): # Gradient of sigma norm
     else:
         return z/(1+eps*norm)
 
+def np_rho_h(z):
+    return  np.logical_and(z>=0,z<h)+np.logical_and(z<=1,z>=h)*(0.5*(1+np.cos(np.pi*(z-h)/(1-h))))
+
+def np_phi(z):
+    return 0.5*((a+b)*sig_grad(z+c,1)+(a-b))
+
 np_diff = tf_diff
 np_norm = np_sig_norm(np_diff)
 np_grad = np_sig_grad(np_diff,np_norm)
+np_r = np_rho_h(np_diff)
+np_p = np_phi(np_diff)
 
-print("np diff")
-print(np_diff)
-print("np norm")
-print(np_norm)
+print("diff")
+print(np_diff-tf_diff)
+print("norm")
+print(np_norm-tf_norm)
 print("np grad")
-print(np_grad)
+print(np_grad-tf_grad)
+print("np rho")
+print(np_r-tf_r)
+print("np phi")
+print(np_p-tf_p)
 
 
-#def rho_h(z):
-#    return (np.sqrt(1+eps*np.sum(z**2,axis=2).reshape((num_boids,num_boids,1)))-1)/eps
-#    return  tf.logical_and(z>=0,z<h)+tf.logical_and(z<=1,z>=h)*(0.5*(1+np.cos(np.pi*(z-h)/(1-h))))
-#
-#def phi(z):
-#    return 0.5*((a+b)*sig_grad(z+c,1)+(a-b))
-#
 #def phi_a(z):
 #    return rho_h(z/r_a)*phi(z-d_a)
 #    
