@@ -49,14 +49,19 @@ init_vars = tf.initialize_all_variables()
 #####################
 
 def sig_norm(z):
-    r= tf.reshape( (tf.sqrt(1+eps*tf.reduce_sum(z**2,axis=2))-1)/eps , (num_boids,num_boids,1))
-    return r
+    return tf.reshape( (tf.sqrt(1+eps*tf.reduce_sum(z**2,axis=2))-1)/eps , (num_boids,num_boids,1))
+
+def sig_grad(z,norm=None,eps=eps):
+    if norm is None:
+        return z/(1+eps*sig_norm(z))
+    else:
+        return z/(1+eps*norm)
 
 ####################
 # Compute trajectory
 ####################
-s = tf.shape(Y)
-Z = sig_norm(Y)
+norm = sig_norm(Y)
+grad = sig_grad(Y,norm)
 
 ##################
 # Begin tf session
@@ -66,12 +71,12 @@ sess = tf.Session()
 sess.run(init_vars)
 resultX = sess.run(X)
 resultY = sess.run(Y)
-resultZ = sess.run(Z)
-resultS = sess.run(s)
+result_norm = sess.run(norm)
+result_grad = sess.run(grad)
 print(resultX)
 print(resultY)
-print(resultZ)
-print(resultS)
+print(result_norm)
+print(result_grad)
 
 
 
