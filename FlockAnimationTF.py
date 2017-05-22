@@ -30,22 +30,14 @@ c_q=10
 c_p=5
 
 # Get parameters from user
-#num_boids = input("Enter number of boids: ")
-#num_iters = input("Enter number of iterations: ")
-#dim = input("Enter number of dimensions [2/3]: ")
-#num_boids,num_iters,dim = int(num_boids),int(num_iters),int(dim)
-#save = input("Do you want to save this animation [y/n]: ")
-#if save=='y':
-#    fname = input("Type file name [no extension]: ")
+num_boids = input("Enter number of boids: ")
+num_iters = input("Enter number of iterations: ")
+dim = input("Enter number of dimensions [2/3]: ")
+num_boids,num_iters,dim = int(num_boids),int(num_iters),int(dim)
+save = input("Do you want to save this animation [y/n]: ")
+if save=='y':
+    fname = input("Type file name [no extension]: ")
 
-num_boids,num_iters,dim = 3,4,2
-
-X = tf.Variable(tf.zeros((num_iters,num_boids,dim)))
-diffs = tf.Variable(tf.random_uniform((num_boids,num_boids,dim)))
-q = tf.Variable(tf.random_uniform((num_boids,dim)))
-p = tf.Variable(tf.random_uniform((num_boids,dim)))
-g = tf.Variable(tf.random_uniform((num_iters,dim)))
-init_vars = tf.global_variables_initializer()
 
 #####################
 # Useful tf functions
@@ -86,22 +78,6 @@ def differentiate(v):
     return dv/dt
 
 
-####################
-# Compute trajectory
-####################
-norm = sig_norm(diffs)
-grad = sig_grad(diffs,norm)
-r=rho_h(diffs)
-p=phi(diffs)
-pa = phi_a(diffs)
-d = differences(diffs)
-u = uUpdate(q,p)
-deriv = differentiate(g)
-
-"""
-Some kind of issue here with using linspace...
-"""
-
 #####################
 # Generate trajectory
 #####################
@@ -110,12 +86,11 @@ if dim == 2:
     gamma_path = input("Select path for gamma agent ['circle','eight']: ")
     
     if gamma_path == "circle":
-        x=tf.cos(tf.constant(np.linspace(0,2*np.pi,num_iters)))
-        y=tf.sin(tf.constant(tf.linspace(0,2*np.pi,num_iters)))
-
+        x=tf.cast(tf.cos(np.linspace(0,2*np.pi,num_iters)),tf.float32)
+        y=tf.cast(tf.sin(np.linspace(0,2*np.pi,num_iters)),tf.float32)
     elif gamma_path == "eight":
-        x=tf.cos(tf.linspace(0,2*np.pi,num_iters))
-        y=tf.sin(tf.linspace(0,4*np.pi,num_iters))
+        x=tf.cast(tf.cos(np.linspace(0,2*np.pi,num_iters)),tf.float32)
+        y=tf.cast(tf.sin(np.linspace(0,4*np.pi,num_iters)),tf.float32)
     
     else:
         assert(False)
@@ -129,14 +104,14 @@ if dim ==3:
     
     if gamma_path == "circle":    
         # Gamma agent (moves in a circle)
-        x=tf.cos(np.linspace(0,2*np.pi,num_iters))
-        y=tf.sin(np.linspace(0,2*np.pi,num_iters))
-        z=tf.zeros(num_iters)
+        x=tf.cast(tf.cos(np.linspace(0,2*np.pi,num_iters)),tf.float32)
+        y=tf.cast(tf.sin(np.linspace(0,2*np.pi,num_iters)),tf.float32)
+        z=tf.cast(tf.zeros(num_iters),tf.float32)
     
     elif gamma_path == "wild":
-        x=tf.cos(np.linspace(0,2*np.pi,num_iters))
-        y=tf.cos(np.linspace(0,4*np.pi,num_iters))
-        z=tf.sin(np.linspace(0,8*np.pi,num_iters))
+        x=tf.cast(tf.cos(np.linspace(0,2*np.pi,num_iters)),tf.float32)
+        y=tf.cast(tf.cos(np.linspace(0,4*np.pi,num_iters)),tf.float32)
+        z=tf.cast(tf.sin(np.linspace(0,8*np.pi,num_iters)),tf.float32)
     
     else:
         assert(False)
@@ -150,78 +125,71 @@ if dim ==3:
 ##################
 
 sess = tf.Session() # Start session
-sess.run(init_vars) # Initialize variables
+sess.run(tf.global_variables_initializer()) # Initialize variables
 
-tf_diff = sess.run(diffs)
-tf_q = sess.run(q)
-tf_p = sess.run(p)
-tf_g = sess.run(g)
-tf_norm = sess.run(norm)
-tf_grad = sess.run(grad)
-tf_r = sess.run(r)
-tf_p = sess.run(p)
-tf_pa = sess.run(pa)
-tf_d = sess.run(d)
-tf_u = sess.run(u)
-tf_deriv = sess.run(deriv)
+####################
+# Compute trajectory
+####################
 
-############
-## Animation
-############
-#
-## Random init boids 
-#q=tf.Variable(tf.random.normal(0.0,1.0,size=(num_boids,dim)))
-#p=tf.Variable(0.01*tf.random.rand(num_boids,dim))
-#
-## Run simulation
-#X = tf.Variable(tf.zeros((num_iters,num_boids,dim)))
-#for i in range(num_iters):
-#    z=uUpdate(q,p)
-#    q+=p*dt
-#    X[i,:,:] = q
-#    p+=(z-c_q*(q-q_g[i])-c_p*(p-p_g[i]))*dt
-#
-## Add the gamma agent
-#X = np.concatenate((X,q_g[:,None,:]),axis=1) 
-#
-#def animate(X,save=False,show=True):
-#    num_iters,num_points,dim = np.shape(X)
-#    fig = plt.figure()
-#
-#    if dim == 2:
-#        # Update function for animation
-#        def update(num):
-#            sc.set_offsets(X[num])
-#            
-#
-#        # Init figure
-#        ax = fig.add_axes([0, 0, 1, 1])
-#        ax.set_xlim(-2, 2), ax.set_xticks([])
-#        ax.set_ylim(-2,2), ax.set_yticks([])
-#        sc = plt.scatter(X[0,:,0],X[0,:,1],s=5)
-#
-#    if dim == 3:
-#
-#        X=np.swapaxes(X,1,2) # Make data right shape for 3D animation
-#
-#        def update(num):
-#            sc._offsets3d = X[num]
-#        
-#        # Set axes
-#        ax = fig.add_subplot(111, projection='3d')
-#        ax.set_xlim3d([-2,2])
-#        ax.set_ylim3d([-2,2])
-#        ax.set_zlim3d([-2,2])
-#        
-#        # Init points
-#        sc = ax.scatter(X[0,0],X[0,1],X[0,2],s=5)
-#
-#    # Animate
-#    ani = matplotlib.animation.FuncAnimation(fig,update,frames=range(num_iters),interval=20)
-#    if save:
-#        ani.save(fname+".mp4",fps=20)
-#        np.save(fname,X)
-#    if show:
-#        plt.show()
-#
+
+
+###########
+# Animation
+###########
+
+# Random init boids 
+q=tf.Variable(tf.random_uniform((num_boids,dim)))
+p=tf.Variable(0.01*tf.random_uniform((num_boids,dim)))
+
+# Run simulation
+X = tf.Variable(tf.zeros((num_iters,num_boids,dim)))
+for i in range(num_iters):
+    z=uUpdate(q,p)
+    q+=p*dt
+    X[i,:,:] = q
+    p+=(z-c_q*(q-q_g[i])-c_p*(p-p_g[i]))*dt
+
+# Add the gamma agent
+X = np.concatenate((X,q_g[:,None,:]),axis=1) 
+
+def animate(X,save=False,show=True):
+    num_iters,num_points,dim = np.shape(X)
+    fig = plt.figure()
+
+    if dim == 2:
+        # Update function for animation
+        def update(num):
+            sc.set_offsets(X[num])
+            
+
+        # Init figure
+        ax = fig.add_axes([0, 0, 1, 1])
+        ax.set_xlim(-2, 2), ax.set_xticks([])
+        ax.set_ylim(-2,2), ax.set_yticks([])
+        sc = plt.scatter(X[0,:,0],X[0,:,1],s=5)
+
+    if dim == 3:
+
+        X=np.swapaxes(X,1,2) # Make data right shape for 3D animation
+
+        def update(num):
+            sc._offsets3d = X[num]
+        
+        # Set axes
+        ax = fig.add_subplot(111, projection='3d')
+        ax.set_xlim3d([-2,2])
+        ax.set_ylim3d([-2,2])
+        ax.set_zlim3d([-2,2])
+        
+        # Init points
+        sc = ax.scatter(X[0,0],X[0,1],X[0,2],s=5)
+
+    # Animate
+    ani = matplotlib.animation.FuncAnimation(fig,update,frames=range(num_iters),interval=20)
+    if save:
+        ani.save(fname+".mp4",fps=20)
+        np.save(fname,X)
+    if show:
+        plt.show()
+
 #animate(X,save=='y')
