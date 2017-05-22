@@ -60,9 +60,14 @@ def sig_grad(z,norm=None,eps=eps):
 def rho_h(z):
     return tf.to_float(tf.logical_and(z>=0,z<h))+tf.to_float(tf.logical_and(z<=1,z>=h))*(0.5*(1+tf.cos(np.pi*(z-h)/(1-h))))
 
-
 def phi(z):
     return 0.5*((a+b)*sig_grad(z+c,1)+(a-b))
+
+def phi_a(z):
+    return rho_h(z/r_a)*phi(z-d_a)
+    
+def differences(q):
+    return q[:,None,:] - q
 
 ####################
 # Compute trajectory
@@ -71,6 +76,8 @@ norm = sig_norm(diffs)
 grad = sig_grad(diffs,norm)
 r=rho_h(diffs)
 p=phi(diffs)
+pa = phi_a(diffs)
+d = differences(diffs)
 
 ##################
 # Begin tf session
@@ -84,6 +91,8 @@ tf_norm = sess.run(norm)
 tf_grad = sess.run(grad)
 tf_r = sess.run(r)
 tf_p = sess.run(p)
+tf_pa = sess.run(pa)
+tf_d = sess.run(d)
 
 ##################
 # Useful functions
@@ -104,29 +113,36 @@ def np_rho_h(z):
 def np_phi(z):
     return 0.5*((a+b)*sig_grad(z+c,1)+(a-b))
 
+
+def np_phi_a(z):
+    return rho_h(z/r_a)*phi(z-d_a)
+    
+def np_differences(q):
+    return q[:,None,:] - q
+
 np_diff = tf_diff
 np_norm = np_sig_norm(np_diff)
 np_grad = np_sig_grad(np_diff,np_norm)
 np_r = np_rho_h(np_diff)
 np_p = np_phi(np_diff)
+np_pa = np_phi_a(np_diff)
+np_d = np_differences(np_diff)
 
 print("diff")
 print(np_diff-tf_diff)
 print("norm")
 print(np_norm-tf_norm)
-print("np grad")
+print("grad")
 print(np_grad-tf_grad)
-print("np rho")
+print("rho")
 print(np_r-tf_r)
-print("np phi")
+print("phi")
 print(np_p-tf_p)
+print("phi_a")
+print(np_pa-tf_pa)
+print("differences")
+print(np_d-tf_d)
 
-
-#def phi_a(z):
-#    return rho_h(z/r_a)*phi(z-d_a)
-#    
-#def differences(q):
-#    return q[:,None,:] - q
 #
 #def uUpdate(q,p):
 #    diff=differences(q)
