@@ -68,7 +68,7 @@ def uUpdate(q,p):
     diff=differences(q)
     norms = sig_norm(diff)
     diffp=differences(p)
-    return tf.reduce_sum(phi_a(norms)*sig_grad(diff,norms),axis=0)+np.sum(rho_h(norms/r_a)*diffp,axis=0)
+    return tf.reduce_sum(phi_a(norms)*sig_grad(diff,norms),axis=0)+tf.reduce_sum(rho_h(norms/r_a)*diffp,axis=0)
 
 def differentiate(v):
     dv = tf.identity(v)
@@ -120,13 +120,6 @@ if dim ==3:
     p_g=tf.stack((differentiate(x),differentiate(y),differentiate(z)),axis=1)
 
 
-##################
-# Begin tf session
-##################
-
-sess = tf.Session() # Start session
-sess.run(tf.global_variables_initializer()) # Initialize variables
-
 ####################
 # Compute trajectory
 ####################
@@ -142,15 +135,24 @@ q=tf.Variable(tf.random_uniform((num_boids,dim)))
 p=tf.Variable(0.01*tf.random_uniform((num_boids,dim)))
 
 # Run simulation
-X = tf.Variable(tf.zeros((num_iters,num_boids,dim)))
+X = tf.expand_dims(q,axis=0)
 for i in range(num_iters):
     z=uUpdate(q,p)
     q+=p*dt
-    X[i,:,:] = q
+    X = tf.concat(0,[X,tf.expand_dims(q,axis=0)])
     p+=(z-c_q*(q-q_g[i])-c_p*(p-p_g[i]))*dt
-
 # Add the gamma agent
-X = np.concatenate((X,q_g[:,None,:]),axis=1) 
+print(X)
+#X = np.concatenate((X,q_g[:,None,:]),axis=1) 
+
+
+##################
+# Begin tf session
+##################
+
+sess = tf.Session() # Start session
+sess.run(tf.global_variables_initializer()) # Initialize variables
+
 
 def animate(X,save=False,show=True):
     num_iters,num_points,dim = np.shape(X)
