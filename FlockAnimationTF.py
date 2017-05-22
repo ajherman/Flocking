@@ -135,7 +135,7 @@ q=tf.Variable(tf.random_uniform((num_boids,dim)))
 p=tf.Variable(0.01*tf.random_uniform((num_boids,dim)))
 
 # Run simulation
-X = tf.expand_dims(q,axis=0)
+X = tf.zeros((0,num_boids,dim))
 for i in range(num_iters):
     z=uUpdate(q,p)
     q+=p*dt
@@ -143,8 +143,12 @@ for i in range(num_iters):
     p+=(z-c_q*(q-q_g[i])-c_p*(p-p_g[i]))*dt
 # Add the gamma agent
 print(X)
-#X = np.concatenate((X,q_g[:,None,:]),axis=1) 
+X = tf.concat(1,[X,q_g[:,None,:]]) 
+print(X)
 
+"""
+boid traj longer than gamma traj by 1
+"""
 
 ##################
 # Begin tf session
