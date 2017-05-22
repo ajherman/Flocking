@@ -41,7 +41,7 @@ c_p=5
 num_boids,num_iters,dim = 5,10,2
 
 X = tf.Variable(tf.zeros((num_iters,num_boids,dim)))
-Y = tf.Variable(tf.random_uniform((10,5,2)))
+Y = tf.Variable(tf.random_uniform((num_boids,num_boids,dim)))
 init_vars = tf.initialize_all_variables()
 
 #####################
