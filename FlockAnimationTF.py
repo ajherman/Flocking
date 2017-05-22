@@ -44,6 +44,7 @@ X = tf.Variable(tf.zeros((num_iters,num_boids,dim)))
 diffs = tf.Variable(tf.random_uniform((num_boids,num_boids,dim)))
 q = tf.Variable(tf.random_uniform((num_boids,dim)))
 p = tf.Variable(tf.random_uniform((num_boids,dim)))
+g = tf.Variable(tf.random_uniform((num_iters,dim)))
 init_vars = tf.global_variables_initializer()
 
 #####################
@@ -77,6 +78,14 @@ def uUpdate(q,p):
     diffp=differences(p)
     return tf.reduce_sum(phi_a(norms)*sig_grad(diff,norms),axis=0)+np.sum(rho_h(norms/r_a)*diffp,axis=0)
 
+def differentiate(v):
+    dv = tf.identity(v)
+    dv = dv[1:] - v[:-1]
+    zeros = tf.zeros((dv[:1]).get_shape())
+    dv = tf.concat(0,[zeros,dv])  # I think this the argument order is reversed in newer tf
+    return dv/dt
+
+
 ####################
 # Compute trajectory
 ####################
@@ -87,6 +96,7 @@ p=phi(diffs)
 pa = phi_a(diffs)
 d = differences(diffs)
 u = uUpdate(q,p)
+deriv = differentiate(g)
 
 ##################
 # Begin tf session
@@ -98,6 +108,7 @@ sess.run(init_vars) # Initialize variables
 tf_diff = sess.run(diffs)
 tf_q = sess.run(q)
 tf_p = sess.run(p)
+tf_g = sess.run(g)
 tf_norm = sess.run(norm)
 tf_grad = sess.run(grad)
 tf_r = sess.run(r)
@@ -105,6 +116,7 @@ tf_p = sess.run(p)
 tf_pa = sess.run(pa)
 tf_d = sess.run(d)
 tf_u = sess.run(u)
+tf_deriv = sess.run(deriv)
 
 ##################
 # Useful functions
@@ -138,9 +150,16 @@ def np_uUpdate(q,p):
     diffp=differences(p)
     return np.sum(phi_a(norms)*sig_grad(diff,norms),axis=0)+np.sum(rho_h(norms/r_a)*diffp,axis=0)
 
+def np_differentiate(v):
+    dv = v.copy()
+    dv[1:]-=v[:-1]
+    return dv/dt
+
+
 np_diff = tf_diff
 np_q = tf_q
 np_p = tf_p
+np_g = tf_g
 np_norm = np_sig_norm(np_diff)
 np_grad = np_sig_grad(np_diff,np_norm)
 np_r = np_rho_h(np_diff)
@@ -148,6 +167,7 @@ np_p = np_phi(np_diff)
 np_pa = np_phi_a(np_diff)
 np_d = np_differences(np_diff)
 np_u = np_uUpdate(np_q,np_p)
+np_deriv = np_differentiate(tf_g)
 
 print("diff")
 print(np_diff-tf_diff)
@@ -165,14 +185,16 @@ print("differences")
 print(np_d-tf_d)
 print("update")
 print(np_u-tf_u)
+print("derivs")
+print(np_deriv-tf_deriv)
 
-#
-#def differentiate(v):
-#    dv = v.copy()
-#    dv[1:]-=v[:-1]
-#    return dv/dt
-#
 ######################
+
+def differentiate(v):
+    dv = v.copy()
+    dv[1:]-=v[:-1]
+    return dv/dt
+
 ## Generate trajectory
 ######################
 #if dim == 2:
