@@ -124,12 +124,6 @@ if dim ==3:
 # Compute trajectory
 ####################
 
-
-
-###########
-# Animation
-###########
-
 # Random init boids 
 q=tf.Variable(tf.random_uniform((num_boids,dim)))
 p=tf.Variable(0.01*tf.random_uniform((num_boids,dim)))
@@ -142,13 +136,8 @@ for i in range(num_iters):
     X = tf.concat(0,[X,tf.expand_dims(q,axis=0)])
     p+=(z-c_q*(q-q_g[i])-c_p*(p-p_g[i]))*dt
 # Add the gamma agent
-print(X)
 X = tf.concat(1,[X,q_g[:,None,:]]) 
-print(X)
 
-"""
-boid traj longer than gamma traj by 1
-"""
 
 ##################
 # Begin tf session
@@ -156,7 +145,8 @@ boid traj longer than gamma traj by 1
 
 sess = tf.Session() # Start session
 sess.run(tf.global_variables_initializer()) # Initialize variables
-
+res = sess.run(X)
+print(res)
 
 def animate(X,save=False,show=True):
     num_iters,num_points,dim = np.shape(X)
@@ -198,4 +188,7 @@ def animate(X,save=False,show=True):
     if show:
         plt.show()
 
-#animate(X,save=='y')
+###########
+# Animation
+###########
+animate(res,save=='y')
