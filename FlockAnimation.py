@@ -31,10 +31,17 @@ num_iters = input("Enter number of iterations: ")
 dim = input("Enter number of dimensions [2/3]: ")
 num_boids,num_iters,dim = int(num_boids),int(num_iters),int(dim)
 save = input("Do you want to save this animation [y/n]: ")
+
 if save=='y':
     fname = input("Type file name [no extension]: ")
 else:
     fname = None
+
+display = input("Do you want to show this animation [y/n]: ")
+if display == 'y':
+    show = True
+else:
+    show = False
 
 ##################
 # Useful functions
@@ -140,6 +147,6 @@ X = np.concatenate((X,q_g[:,None,:]),axis=1)
 #########
 
 flock = SA(X)
-flock.animate(fname=fname)
+flock.animate(fname=fname,show=show)
 
 
