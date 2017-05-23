@@ -5,12 +5,7 @@ Created on Tue May 16 21:46:44 2017
 @author: Ari
 """
 
-import matplotlib.pyplot as plt
 import numpy as np
-from mpl_toolkits.mplot3d import Axes3D
-import matplotlib.animation as animation
-from scipy.spatial.distance import pdist,squareform
-import matplotlib
 from AnimateFunc import ScatterAnimation as SA
 
 ############

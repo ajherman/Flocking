@@ -5,13 +5,10 @@ Created on Tue May 16 21:46:44 2017
 @author: Ari
 """
 
-import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
-from mpl_toolkits.mplot3d import Axes3D
-import matplotlib.animation as animation
-from scipy.spatial.distance import pdist,squareform
-import matplotlib
+from AnimateFunc import ScatterAnimation as SA
+
 ############
 # Parameters
 ############
@@ -37,7 +34,8 @@ num_boids,num_iters,dim = int(num_boids),int(num_iters),int(dim)
 save = input("Do you want to save this animation [y/n]: ")
 if save=='y':
     fname = input("Type file name [no extension]: ")
-
+else:
+    fname = None
 
 #####################
 # Useful tf functions
@@ -147,47 +145,49 @@ sess = tf.Session() # Start session
 sess.run(tf.global_variables_initializer()) # Initialize variables
 res = sess.run(X)
 
-def animate(X,save=False,show=True):
-    num_iters,num_points,dim = np.shape(X)
-    fig = plt.figure()
-
-    if dim == 2:
-        # Update function for animation
-        def update(num):
-            sc.set_offsets(X[num])
-            
-
-        # Init figure
-        ax = fig.add_axes([0, 0, 1, 1])
-        ax.set_xlim(-2, 2), ax.set_xticks([])
-        ax.set_ylim(-2,2), ax.set_yticks([])
-        sc = plt.scatter(X[0,:,0],X[0,:,1],s=5)
-
-    if dim == 3:
-
-        X=np.swapaxes(X,1,2) # Make data right shape for 3D animation
-
-        def update(num):
-            sc._offsets3d = X[num]
-        
-        # Set axes
-        ax = fig.add_subplot(111, projection='3d')
-        ax.set_xlim3d([-2,2])
-        ax.set_ylim3d([-2,2])
-        ax.set_zlim3d([-2,2])
-        
-        # Init points
-        sc = ax.scatter(X[0,0],X[0,1],X[0,2],s=5)
-
-    # Animate
-    ani = matplotlib.animation.FuncAnimation(fig,update,frames=range(num_iters),interval=20)
-    if save:
-        ani.save(fname+".mp4",fps=20)
-        np.save(fname,X)
-    if show:
-        plt.show()
+#def animate(X,save=False,show=True):
+#    num_iters,num_points,dim = np.shape(X)
+#    fig = plt.figure()
+#
+#    if dim == 2:
+#        # Update function for animation
+#        def update(num):
+#            sc.set_offsets(X[num])
+#            
+#
+#        # Init figure
+#        ax = fig.add_axes([0, 0, 1, 1])
+#        ax.set_xlim(-2, 2), ax.set_xticks([])
+#        ax.set_ylim(-2,2), ax.set_yticks([])
+#        sc = plt.scatter(X[0,:,0],X[0,:,1],s=5)
+#
+#    if dim == 3:
+#
+#        X=np.swapaxes(X,1,2) # Make data right shape for 3D animation
+#
+#        def update(num):
+#            sc._offsets3d = X[num]
+#        
+#        # Set axes
+#        ax = fig.add_subplot(111, projection='3d')
+#        ax.set_xlim3d([-2,2])
+#        ax.set_ylim3d([-2,2])
+#        ax.set_zlim3d([-2,2])
+#        
+#        # Init points
+#        sc = ax.scatter(X[0,0],X[0,1],X[0,2],s=5)
+#
+#    # Animate
+#    ani = matplotlib.animation.FuncAnimation(fig,update,frames=range(num_iters),interval=20)
+#    if save:
+#        ani.save(fname+".mp4",fps=20)
+#        np.save(fname,X)
+#    if show:
+#        plt.show()
 
 ###########
 # Animation
 ###########
-animate(res,save=='y')
+
+flock = SA(res)
+flock.animate(fname=fname)
