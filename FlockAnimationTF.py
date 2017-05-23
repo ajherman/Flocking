@@ -158,6 +158,6 @@ res = sess.run(X)
 
 if save:
     np.save(fname,res)
-
-#flock = SA(res)
-#flock.animate(fname=fname,show=show)
+if show:
+	flock = SA(res)
+	flock.animate(fname=fname,show=show)
