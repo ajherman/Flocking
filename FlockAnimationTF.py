@@ -156,5 +156,5 @@ res = sess.run(X)
 # Animation
 ###########
 
-flock = SA(res)
-flock.animate(fname=fname,show=show)
+#flock = SA(res)
+#flock.animate(fname=fname,show=show)
