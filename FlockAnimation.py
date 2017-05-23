@@ -11,6 +11,8 @@ from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.animation as animation
 from scipy.spatial.distance import pdist,squareform
 import matplotlib
+from AnimateFunc import ScatterAnimation as SA
+
 ############
 # Parameters
 ############
@@ -36,14 +38,14 @@ num_boids,num_iters,dim = int(num_boids),int(num_iters),int(dim)
 save = input("Do you want to save this animation [y/n]: ")
 if save=='y':
     fname = input("Type file name [no extension]: ")
+else:
+    fname = None
+
 ##################
 # Useful functions
 ##################
 
 def sig_norm(z): # Sigma norm
-    print(np.shape(z))
-    r=(np.sqrt(1+eps*np.sum(z**2,axis=2).reshape((num_boids,num_boids,1)))-1)/eps
-    print(np.shape(r))
     return (np.sqrt(1+eps*np.sum(z**2,axis=2).reshape((num_boids,num_boids,1)))-1)/eps
 
 def sig_grad(z,norm=None,eps=eps): # Gradient of sigma norm
@@ -118,9 +120,9 @@ if dim ==3:
     p_g=np.stack((differentiate(x),differentiate(y),differentiate(z)),axis=1)
 
 
-###########
-# Animation
-###########
+################
+# Run simulation
+################
 
 # Random init boids 
 q=np.random.normal(0.0,1.0,size=(num_boids,dim))
@@ -137,44 +139,12 @@ for i in range(num_iters):
 # Add the gamma agent
 X = np.concatenate((X,q_g[:,None,:]),axis=1) 
 
-def animate(X,save=False,show=True):
-    num_iters,num_points,dim = np.shape(X)
-    fig = plt.figure()
 
-    if dim == 2:
-        # Update function for animation
-        def update(num):
-            sc.set_offsets(X[num])
-            
+#########
+# Animate
+#########
 
-        # Init figure
-        ax = fig.add_axes([0, 0, 1, 1])
-        ax.set_xlim(-2, 2), ax.set_xticks([])
-        ax.set_ylim(-2,2), ax.set_yticks([])
-        sc = plt.scatter(X[0,:,0],X[0,:,1],s=5)
+flock = SA(X)
+flock.animate(fname=fname)
 
-    if dim == 3:
 
-        X=np.swapaxes(X,1,2) # Make data right shape for 3D animation
-
-        def update(num):
-            sc._offsets3d = X[num]
-        
-        # Set axes
-        ax = fig.add_subplot(111, projection='3d')
-        ax.set_xlim3d([-2,2])
-        ax.set_ylim3d([-2,2])
-        ax.set_zlim3d([-2,2])
-        
-        # Init points
-        sc = ax.scatter(X[0,0],X[0,1],X[0,2],s=5)
-
-    # Animate
-    ani = matplotlib.animation.FuncAnimation(fig,update,frames=range(num_iters),interval=20)
-    if save:
-        ani.save(fname+".mp4",fps=20)
-        np.save(fname,X)
-    if show:
-        plt.show()
-
-animate(X,save=='y')
