@@ -146,7 +146,10 @@ X = np.concatenate((X,q_g[:,None,:]),axis=1)
 # Animate
 #########
 
-flock = SA(X)
-flock.animate(fname=fname,show=show)
+if save:
+    np.save(fname,X)
+
+#flock = SA(X)
+#flock.animate(fname=fname,show=show)
 
 

@@ -54,6 +54,6 @@ class ScatterAnimation():
         
         if fname != None:
             ani.save(fname+".mp4",fps=20)
-            np.save(fname,self.array2animate)
+    
         if show:
             plt.show()
