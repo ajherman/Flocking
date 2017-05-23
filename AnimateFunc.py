@@ -4,6 +4,7 @@ import matplotlib.animation as animation
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib
 
+
 class ScatterAnimation():
 
     def __init__(self,X):
@@ -57,3 +58,11 @@ class ScatterAnimation():
     
         if show:
             plt.show()
+
+
+
+class QuiverAnimation():
+
+    def __init__(self,X,V):
+        
+        return 0
