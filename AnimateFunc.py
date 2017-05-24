@@ -58,10 +58,10 @@ class ScatterAnimation():
         if show:
             plt.show()
 
-class QuiverAnimation():
-
-    def __init__(self,X,V):
-        
-        self.array2animate = X
-	self.directionarray = V
+#class QuiverAnimation():
+#
+#    def __init__(self,X,V):
+#        
+#        self.array2animate = X
+#	self.directionarray = V
 
