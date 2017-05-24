@@ -58,6 +58,7 @@ class ScatterAnimation():
         if show:
             plt.show()
 
+
 class QuiverAnimation():
 
     def __init__(self,X,V):
