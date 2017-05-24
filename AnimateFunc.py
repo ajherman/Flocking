@@ -63,5 +63,5 @@ class QuiverAnimation():
     def __init__(self,X,V):
         
         self.array2animate = X
-	self.directionarray = V
+        self.directionarray = V
 

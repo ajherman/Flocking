@@ -146,7 +146,7 @@ X = np.concatenate((X,q_g[:,None,:]),axis=1)
 # Animate
 #########
 
-if save:
+if save == 'y':
     np.save(fname,X)
 
 if show:
