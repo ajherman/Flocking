@@ -90,7 +90,7 @@ class QuiverAnimation():
             self.ax.set_zlim3d([-2,2])
             
             # Init points
-            self.sc = self.ax.quiver(self.Q[0,0],self.Q[0,1],self.Q[0,2],self.P[0,0],self.P[0,1],self.P[0,2])
+            self.sc = self.ax.quiver(self.Q[0,0],self.Q[0,1],self.Q[0,2],self.P[0,0],self.P[0,1],self.P[0,2],length=0.2,lw=1)
 
         else:
             print("Invalid dimension for animation array")
@@ -103,7 +103,10 @@ class QuiverAnimation():
             self.sc.set_UVC(self.P[num,:,0],self.P[num,:,1])
         elif self.dim == 3:
             self.ax.clear()
-            self.ax.quiver(self.Q[num,0],self.Q[num,1],self.Q[num,2],self.P[num,0],self.P[num,1],self.P[num,2])
+            self.ax.set_xlim3d([-2,2])
+            self.ax.set_ylim3d([-2,2])
+            self.ax.set_zlim3d([-2,2])
+            self.ax.quiver(self.Q[num,0],self.Q[num,1],self.Q[num,2],self.P[num,0],self.P[num,1],self.P[num,2],length=0.2,lw=1)
         else:
             print("Invalid dimension for animation array")
             assert(False)
