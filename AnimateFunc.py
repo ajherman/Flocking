@@ -100,7 +100,7 @@ class QuiverAnimation():
         
         if self.dim == 2:
             self.sc.set_offsets(self.Q[num])
-            self.sc.set_offsets(self.P[num])
+            self.sc.set_UVC(self.P[num,:,0],self.P[num,:,1])
         elif self.dim == 3:
             self.sc._offsets3d = self.Q[num]
         else:

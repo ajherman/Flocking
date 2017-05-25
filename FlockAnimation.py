@@ -157,9 +157,7 @@ if save == 'y':
 
 if show:
     if quiver:
-        norm_V = V/norm(V,axis=1,keepdims=True)
-        print(np.shape(norm_V))
-        print(np.shape(X))
+        norm_V = V/norm(V,axis=2,keepdims=True)
         flock = QA(X,norm_V)
         flock.animate(fname=fname,show=show)
     else:
