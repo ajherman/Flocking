@@ -6,7 +6,10 @@ Created on Tue May 16 21:46:44 2017
 """
 
 import numpy as np
+from sklearn.preprocessing import normalize
+from numpy.linalg import norm
 from AnimateFunc import ScatterAnimation as SA
+from AnimateFunc import QuiverAnimation as QA
 
 ############
 # Parameters
@@ -40,6 +43,7 @@ else:
 display = input("Do you want to show this animation [y/n]: ")
 if display == 'y':
     show = True
+    quiver = input("Do you want a quiver animation [y/n]: ")
 else:
     show = False
 
@@ -132,15 +136,17 @@ p=0.01*np.random.rand(num_boids,dim)
 
 # Run simulation
 X = np.zeros((num_iters,num_boids,dim))
+V = np.zeros((num_iters,num_boids,dim))
 for i in range(num_iters):
     z=uUpdate(q,p)
     q+=p*dt
     X[i,:,:] = q
+    V[i,:,:] = p
     p+=(z-c_q*(q-q_g[i])-c_p*(p-p_g[i]))*dt
 
 # Add the gamma agent
 X = np.concatenate((X,q_g[:,None,:]),axis=1) 
-
+V = np.concatenate((V,p_g[:,None,:]),axis=1)
 
 #########
 # Animate
@@ -150,7 +156,11 @@ if save == 'y':
     np.save(fname,X)
 
 if show:
-    flock = SA(X)
-    flock.animate(fname=fname,show=show)
+    if quiver:
+        flock = QA(X,V/norm(V,axis=1,keepdims=True))
+        flock.animate(fname=fname,show=show)
+    else:
+        flock = SA(X)
+        flock.animate(fname=fname,show=show)
 
 

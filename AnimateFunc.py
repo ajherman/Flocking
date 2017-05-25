@@ -72,16 +72,17 @@ class QuiverAnimation():
 
         if self.dim == 2:
             self.Q = Q
+            self.P = P
             self.ax = self.fig.add_axes([0, 0, 1, 1])
             self.ax.set_xlim(-2, 2)
             self.ax.set_xticks([])
             self.ax.set_ylim(-2,2)
             self.ax.set_yticks([])
-            self.sc = plt.quiver(self.Q[0,:,0],self.Q[0,:,1],self.P[0,:,0],self.P[0,:,1],s=5)
+            self.sc = plt.quiver(self.Q[0,:,0],self.Q[0,:,1],self.P[0,:,0],self.P[0,:,1])
 
         elif self.dim == 3:
             self.Q = np.swapaxes(Q,1,2) # Necessary re-ordering of axes
-
+            self.P = np.swapaxes(P,1,2)
             # Set axes
             self.ax = self.fig.add_subplot(111, projection='3d')
             self.ax.set_xlim3d([-2,2])
@@ -89,7 +90,7 @@ class QuiverAnimation():
             self.ax.set_zlim3d([-2,2])
             
             # Init points
-            self.sc = self.ax.scatter(self.Q[0,0],self.Q[0,1],self.Q[0,2],s=5)
+            self.sc = self.ax.scatter(self.Q[0,0],self.Q[0,1],self.Q[0,2])
 
         else:
             print("Invalid dimension for animation array")
@@ -98,7 +99,8 @@ class QuiverAnimation():
     def update(self,num):
         
         if self.dim == 2:
-            self.sc.set_offsets(self.Q[num],self.P[num])
+            self.sc.set_offsets(self.Q[num])
+            self.sc.set_offsets(self.P[num])
         elif self.dim == 3:
             self.sc._offsets3d = self.Q[num]
         else:
