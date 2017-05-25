@@ -66,3 +66,17 @@ class QuiverAnimation():
         self.array2animate = X
         self.directionarray = V
 
+    def update(self,num):
+        return 0
+
+    def animate(self,fname=None,show=True):
+        
+        ani = matplotlib.animation.FuncAnimation(self.fig,self.update,frames=range(self.num_iters),interval=20)
+        
+        if fname != None:
+            ani.save(fname+".mp4",fps=20)
+    
+        if show:
+            plt.show()
+
+
