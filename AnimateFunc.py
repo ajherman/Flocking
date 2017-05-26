@@ -116,7 +116,7 @@ class QuiverAnimation():
         ani = matplotlib.animation.FuncAnimation(self.fig,self.update,frames=range(self.num_iters),interval=20)
         
         if fname != None:
-            ani.save(fname+".mp4",fps=20)
+            ani.save(fname+".avi",fps=20,bitrate=-1,dpi=100)
     
         if show:
             plt.show()
