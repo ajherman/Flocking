@@ -10,91 +10,75 @@ from sklearn.preprocessing import normalize
 from numpy.linalg import norm
 from AnimateFunc import ScatterAnimation as SA
 from AnimateFunc import QuiverAnimation as QA
-from UserInput import getUserInput
+from UserInput import SimulationParams, AnimationParams
+from FlockFuncs import OlfatiFlockingSimulation
 
-################
-# Get parameters
-################
+#####################################
+# Get simulation parameters from user
+#####################################
 
-eps,d,r,d_a,r_a,a,b,c,h,dt,c_q,c_p,quiver,show,num_boids,num_iters,dim,save,fname = getUserInput()
+sim_params = SimulationParams()
+sim_params.getUserInput()
 
-##################
-# Useful functions
-##################
+#eps,d,r,d_a,r_a,a,b,c,h,dt,c_q,c_p,num_boids,num_iters,dim = sim_params.eps,sim_params.d,sim_params.r,sim_params.d_a,sim_params.r_a,sim_params.a,sim_params.b,sim_params.c,sim_params.h,sim_params.dt,sim_params.c_q,sim_params.c_p,sim_params.num_boids,sim_params.num_iters,sim_params.dim
+#
 
-def sig_norm(z): # Sigma norm
-    return (np.sqrt(1+eps*np.sum(z**2,axis=2).reshape((num_boids,num_boids,1)))-1)/eps
+####################################
+# Get animation parameters from user
+####################################
 
-def sig_grad(z,norm=None,eps=eps): # Gradient of sigma norm
-    if type(norm) == "NoneType":
-        return z/(1+eps*sig_norm(z))
-    else:
-        return z/(1+eps*norm)
-    
-def rho_h(z):
-    return  np.logical_and(z>=0,z<h)+np.logical_and(z<=1,z>=h)*(0.5*(1+np.cos(np.pi*(z-h)/(1-h))))
+ani_params = AnimationParams()
+ani_params.getUserInput()
 
-def phi(z):
-    return 0.5*((a+b)*sig_grad(z+c,1)+(a-b))
+###########################
+# Setup flocking simulation
+###########################
 
-def phi_a(z):
-    return rho_h(z/r_a)*phi(z-d_a)
-    
-def differences(q):
-    return q[:,None,:] - q
+flock_sim = OlfatiFlockingSimulation()
 
-def uUpdate(q,p):
-    diff=differences(q)
-    norms = sig_norm(diff)
-    diffp=differences(p)
-    return np.sum(phi_a(norms)*sig_grad(diff,norms),axis=0)+np.sum(rho_h(norms/r_a)*diffp,axis=0)
-
-def differentiate(v):
-    dv = v.copy()
-    dv[1:]-=v[:-1]
-    return dv/dt
+flock_sim.eps,flock_sim.num_boids,flock_sim.a,flock_sim.b,flock_sim.c,flock_sim.h,flock_sim.r_a,flock_sim.d_a,flock_sim.dt = sim_params.eps,sim_params.num_boids,sim_params.a,sim_params.b,sim_params.c,sim_params.h,sim_params.r_a,sim_params.d_a,sim_params.dt
 
 #####################
 # Generate trajectory
 #####################
-if dim == 2:
+if sim_params.dim == 2:
     # Pick a path for gamme agent
     gamma_path = input("Select path for gamma agent ['circle','eight']: ")
     
     if gamma_path == "circle":
-        x=np.cos(np.linspace(0,2*np.pi,num_iters))
-        y=np.sin(np.linspace(0,2*np.pi,num_iters))
+        x=np.cos(np.linspace(0,2*np.pi,sim_params.num_iters))
+        y=np.sin(np.linspace(0,2*np.pi,sim_params.num_iters))
 
     elif gamma_path == "eight":
-        x=np.cos(np.linspace(0,2*np.pi,num_iters))
-        y=np.sin(np.linspace(0,4*np.pi,num_iters))
+        x=np.cos(np.linspace(0,2*np.pi,sim_params.num_iters))
+        y=np.sin(np.linspace(0,4*np.pi,sim_params.num_iters))
     
     else:
         assert(False)
 
     q_g=np.stack((x,y),axis=1) 
-    p_g=np.stack((differentiate(x),differentiate(y)),axis=1)
+    p_g=np.stack((flock_sim.differentiate(x),flock_sim.differentiate(y)),axis=1)
 
-if dim ==3:
+if sim_params.dim ==3:
     # Pick a path for gamma agent
     gamma_path = input("Select path for gamma agent ['circle','wild']: ")
     
     if gamma_path == "circle":    
         # Gamma agent (moves in a circle)
-        x=np.cos(np.linspace(0,2*np.pi,num_iters))
-        y=np.sin(np.linspace(0,2*np.pi,num_iters))
-        z=np.zeros(num_iters)
+        x=np.cos(np.linspace(0,2*np.pi,sim_params.num_iters))
+        y=np.sin(np.linspace(0,2*np.pi,sim_params.num_iters))
+        z=np.zeros(sim_params.num_iters)
     
     elif gamma_path == "wild":
-        x=np.cos(np.linspace(0,2*np.pi,num_iters))
-        y=np.cos(np.linspace(0,4*np.pi,num_iters))
-        z=np.sin(np.linspace(0,8*np.pi,num_iters))
+        x=np.cos(np.linspace(0,2*np.pi,sim_params.num_iters))
+        y=np.cos(np.linspace(0,4*np.pi,sim_params.num_iters))
+        z=np.sin(np.linspace(0,8*np.pi,sim_params.num_iters))
     
     else:
         assert(False)
 
     q_g=np.stack((x,y,y),axis=1)
-    p_g=np.stack((differentiate(x),differentiate(y),differentiate(z)),axis=1)
+    p_g=np.stack((flock_sim.differentiate(x),flock_sim.differentiate(y),flock_sim.differentiate(z)),axis=1)
 
 
 ################
@@ -102,18 +86,18 @@ if dim ==3:
 ################
 
 # Random init boids 
-q=np.random.normal(0.0,1.0,size=(num_boids,dim))
-p=0.01*np.random.rand(num_boids,dim)
+q=np.random.normal(0.0,1.0,size=(sim_params.num_boids,sim_params.dim))
+p=0.01*np.random.rand(sim_params.num_boids,sim_params.dim)
 
 # Run simulation
-X = np.zeros((num_iters,num_boids,dim))
-V = np.zeros((num_iters,num_boids,dim))
-for i in range(num_iters):
-    z=uUpdate(q,p)
-    q+=p*dt
+X = np.zeros((sim_params.num_iters,sim_params.num_boids,sim_params.dim))
+V = np.zeros((sim_params.num_iters,sim_params.num_boids,sim_params.dim))
+for i in range(sim_params.num_iters):
+    z=flock_sim.uUpdate(q,p)
+    q+=p*sim_params.dt
     X[i,:,:] = q
     V[i,:,:] = p
-    p+=(z-c_q*(q-q_g[i])-c_p*(p-p_g[i]))*dt
+    p+=(z-sim_params.c_q*(q-q_g[i])-sim_params.c_p*(p-p_g[i]))*sim_params.dt
 
 # Add the gamma agent
 X = np.concatenate((X,q_g[:,None,:]),axis=1) 
@@ -123,16 +107,16 @@ V = np.concatenate((V,p_g[:,None,:]),axis=1)
 # Animate
 #########
 
-if save == 'y':
-    np.save(fname,X)
+if ani_params.save:
+    np.save(ani_params.fname,X)
 
-if show:
-    if quiver == 'y':
+if ani_params.show:
+    if ani_params.quiver:
         norm_V = 0.01*V/norm(V,axis=2,keepdims=True)
         flock = QA(X,norm_V)
-        flock.animate(fname=fname,show=show)
+        flock.animate(fname=ani_params.fname,show=ani_params.show)
     else:
         flock = SA(X)
-        flock.animate(fname=fname,show=show)
+        flock.animate(fname=ani_params.fname,show=ani_params.show)
 
 

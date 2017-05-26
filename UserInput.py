@@ -1,44 +1,66 @@
-# User input# User input
+#gUser input# User input
 
 import numpy as np
 
-def getUserInput():
+class Params():
 
-    ############
-    # Parameters
-    ############
+    def __init__(self):
+        # Initialize all parameters
+        pass
 
-    eps = 0.1
-    d=0.7 #25
-    r=1.2*d
-    d_a = (np.sqrt(1+eps*d**2)-1)/eps
-    r_a = (np.sqrt(1+eps*r**2)-1)/eps
-    a=5
-    b=5
-    c=.5*np.abs(a-b)/np.sqrt(a*b)
-    h=.2 #0<h<1
-    dt=0.01
-    c_q=10
-    c_p=5
-    quiver = False
-    show = False
+    def getUserInput(self):
+        # Prompt user to set some parameters
+        pass
 
-    # Get parameters from user
-    num_boids = input("Enter number of boids: ")
-    num_iters = input("Enter number of iterations: ")
-    dim = input("Enter number of dimensions [2/3]: ")
-    num_boids,num_iters,dim = int(num_boids),int(num_iters),int(dim)
-    save = input("Do you want to save this animation [y/n]: ")
+class SimulationParams(Params):
 
-    if save=='y':
-        fname = input("Type file name [no extension]: ")
-    else:
-        fname = None
+    def __init__(self):
+        self.eps = 0.1
+        self.d=0.7 #25
+        self.r=1.2*self.d
+        self.d_a = (np.sqrt(1+self.eps*self.d**2)-1)/self.eps
+        self.r_a = (np.sqrt(1+self.eps*self.r**2)-1)/self.eps
+        self.a=5
+        self.b=5
+        self.c=.5*np.abs(self.a-self.b)/np.sqrt(self.a*self.b)
+        self.h=.2 #0<h<1
+        self.dt=0.01
+        self.c_q=10
+        self.c_p=5
+        self.num_boids = None
+        self.num_iters = None
+        self.dim = None
 
-    display = input("Do you want to show this animation [y/n]: ")
-    if display == 'y':
-        show = True
-        quiver_display = input("Do you want a quiver animation [y/n]: ")
-        if quiver_display == 'y':
-            quiver = True
-    return eps,d,r,d_a,r_a,a,b,c,h,dt,c_q,c_p,quiver,show,num_boids,num_iters,dim,save,fname
+    def getUserInput(self):
+
+        # Get parameters from user
+        self.num_boids = input("Enter number of boids: ")
+        self.num_iters = input("Enter number of iterations: ")
+        self.dim = input("Enter number of dimensions [2/3]: ")
+        self.num_boids,self.num_iters,self.dim = int(self.num_boids),int(self.num_iters),int(self.dim)
+
+class AnimationParams(Params):
+
+    def __init__(self):
+        self.show = True
+        self.save = False
+        self.fname = None
+        self.quiver = False
+
+    def getUserInput(self):
+        self.save = input("Do you want to save this animation [y/n]: ")
+
+        if self.save=='y':
+            self.save = True
+            self.fname = input("Type file name [no extension]: ")
+        else:
+            self.save = False
+            self.fname = None
+
+        display = input("Do you want to show this animation [y/n]: ")
+        if display == 'y':
+            self.show = True
+            quiver_display = input("Do you want a quiver animation [y/n]: ")
+            if quiver_display == 'y':
+                self.quiver = True
+
