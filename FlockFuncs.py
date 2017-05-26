@@ -37,7 +37,8 @@ class OlfatiFlockingSimulation(FlockingSimulation):
         return 0.5*((self.a+self.b)*self.sig_grad(z+self.c,1)+(self.a-self.b))
 
     def phi_a(self,z):
-        return self.rho_h(z/self.r_a)*self.ph9eful functions
+        return self.rho_h(z/self.r_a)*self.phi(z-self.d_a)
+
     def differences(self,q):
         return q[:,None,:] - q
 
