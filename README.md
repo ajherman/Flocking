@@ -5,6 +5,8 @@ Some projects:
 3) Figure out what causes the cool chain reaction thing
 4) Make more natural flocking simulations
 5) Make a test program
+6) Make beta agent version
+7) Make counter example and graph V
    
                          
                               ###########
