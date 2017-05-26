@@ -34,72 +34,17 @@ ani_params.getUserInput()
 flock_sim = OlfatiFlockingSimulation()
 
 # Set simulation parameters
-flock_sim.eps,flock_sim.num_boids,flock_sim.a,flock_sim.b,flock_sim.c,flock_sim.h,flock_sim.r_a,flock_sim.d_a,flock_sim.dt = sim_params.eps,sim_params.num_boids,sim_params.a,sim_params.b,sim_params.c,sim_params.h,sim_params.r_a,sim_params.d_a,sim_params.dt
-
-#####################
-# Generate trajectory
-#####################
-if sim_params.dim == 2:
-    # Pick a path for gamme agent
-    gamma_path = input("Select path for gamma agent ['circle','eight']: ")
-    
-    if gamma_path == "circle":
-        x=np.cos(np.linspace(0,2*np.pi,sim_params.num_iters))
-        y=np.sin(np.linspace(0,2*np.pi,sim_params.num_iters))
-
-    elif gamma_path == "eight":
-        x=np.cos(np.linspace(0,2*np.pi,sim_params.num_iters))
-        y=np.sin(np.linspace(0,4*np.pi,sim_params.num_iters))
-    
-    else:
-        assert(False)
-
-    q_g=np.stack((x,y),axis=1) 
-    p_g=np.stack((flock_sim.differentiate(x),flock_sim.differentiate(y)),axis=1)
-
-if sim_params.dim ==3:
-    # Pick a path for gamma agent
-    gamma_path = input("Select path for gamma agent ['circle','wild']: ")
-    
-    if gamma_path == "circle":    
-        # Gamma agent (moves in a circle)
-        x=np.cos(np.linspace(0,2*np.pi,sim_params.num_iters))
-        y=np.sin(np.linspace(0,2*np.pi,sim_params.num_iters))
-        z=np.zeros(sim_params.num_iters)
-    
-    elif gamma_path == "wild":
-        x=np.cos(np.linspace(0,2*np.pi,sim_params.num_iters))
-        y=np.cos(np.linspace(0,4*np.pi,sim_params.num_iters))
-        z=np.sin(np.linspace(0,8*np.pi,sim_params.num_iters))
-    
-    else:
-        assert(False)
-
-    q_g=np.stack((x,y,y),axis=1)
-    p_g=np.stack((flock_sim.differentiate(x),flock_sim.differentiate(y),flock_sim.differentiate(z)),axis=1)
-
+flock_sim.eps,flock_sim.num_boids,flock_sim.a,flock_sim.b,flock_sim.c,flock_sim.h,flock_sim.r_a,flock_sim.d_a,flock_sim.dt,flock_sim.num_iters,flock_sim.gamma_path,flock_sim.dim,flock_sim.c_q,flock_sim.c_p = sim_params.eps,sim_params.num_boids,sim_params.a,sim_params.b,sim_params.c,sim_params.h,sim_params.r_a,sim_params.d_a,sim_params.dt,sim_params.num_iters,sim_params.gamma_path,sim_params.dim,sim_params.c_q,sim_params.c_p
 
 ################
 # Run simulation
 ################
 
-# Random init boids 
-q=np.random.normal(0.0,1.0,size=(sim_params.num_boids,sim_params.dim))
-p=0.01*np.random.rand(sim_params.num_boids,sim_params.dim)
+# Init simulation
+flock_sim.initSim()
 
 # Run simulation
-X = np.zeros((sim_params.num_iters,sim_params.num_boids,sim_params.dim))
-V = np.zeros((sim_params.num_iters,sim_params.num_boids,sim_params.dim))
-for i in range(sim_params.num_iters):
-    z=flock_sim.uUpdate(q,p)
-    q+=p*sim_params.dt
-    X[i,:,:] = q
-    V[i,:,:] = p
-    p+=(z-sim_params.c_q*(q-q_g[i])-sim_params.c_p*(p-p_g[i]))*sim_params.dt
-
-# Add the gamma agent
-X = np.concatenate((X,q_g[:,None,:]),axis=1) 
-V = np.concatenate((V,p_g[:,None,:]),axis=1)
+X,V = flock_sim.runSim()
 
 #########
 # Animate
@@ -110,8 +55,7 @@ if ani_params.save:
 
 if ani_params.show:
     if ani_params.quiver:
-        norm_V = 0.01*V/norm(V,axis=2,keepdims=True)
-        flock = QA(X,norm_V)
+        flock = QA(X,0.01*V/norm(V,axis=2,keepdims=True))
         flock.animate(fname=ani_params.fname,show=ani_params.show)
     else:
         flock = SA(X)
