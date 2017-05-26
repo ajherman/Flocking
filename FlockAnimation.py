@@ -11,7 +11,7 @@ from numpy.linalg import norm
 from AnimateFunc import ScatterAnimation 
 from AnimateFunc import QuiverAnimation 
 from UserInput import SimulationParams, AnimationParams
-from FlockFuncs import OlfatiFlockingSimulation
+from FlockFuncs import OlfatiFlockingSimulation, OlfatiFlockingSimulationTF
 
 #####################################
 # Get simulation parameters from user
@@ -19,6 +19,7 @@ from FlockFuncs import OlfatiFlockingSimulation
 
 sim_params = SimulationParams()
 sim_params.getUserInput()
+run_method = input("Do you want to run this simulation with Numpy or Tensorflow? ['NP'/'TF']: ")
 
 ####################################
 # Get animation parameters from user
@@ -31,7 +32,13 @@ ani_params.getUserInput()
 # Setup flocking simulation
 ###########################
 
-flock_sim = OlfatiFlockingSimulation()
+if run_method == 'NP':
+    flock_sim = OlfatiFlockingSimulation()
+elif run_method == 'TF':
+    flock_sim = OlfatiFlockingSimulationTF()
+else:
+    print("Invalid run method.  Must select Numpy or Tensorflow. ['NP'/'TF']")
+    assert(False)
 
 # Set simulation parameters
 flock_sim.eps,flock_sim.num_boids,flock_sim.a,flock_sim.b,flock_sim.c,flock_sim.h,flock_sim.r_a,flock_sim.d_a,flock_sim.dt,flock_sim.num_iters,flock_sim.gamma_path,flock_sim.dim,flock_sim.c_q,flock_sim.c_p = sim_params.eps,sim_params.num_boids,sim_params.a,sim_params.b,sim_params.c,sim_params.h,sim_params.r_a,sim_params.d_a,sim_params.dt,sim_params.num_iters,sim_params.gamma_path,sim_params.dim,sim_params.c_q,sim_params.c_p
