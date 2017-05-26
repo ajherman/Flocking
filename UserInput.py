@@ -1,4 +1,4 @@
-#gUser input# User input
+#User input# User input
 
 import numpy as np
 

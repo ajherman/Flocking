@@ -8,8 +8,8 @@ Created on Tue May 16 21:46:44 2017
 import numpy as np
 from sklearn.preprocessing import normalize
 from numpy.linalg import norm
-from AnimateFunc import ScatterAnimation as SA
-from AnimateFunc import QuiverAnimation as QA
+from AnimateFunc import ScatterAnimation 
+from AnimateFunc import QuiverAnimation 
 from UserInput import SimulationParams, AnimationParams
 from FlockFuncs import OlfatiFlockingSimulation
 
@@ -46,19 +46,21 @@ flock_sim.initSim()
 # Run simulation
 X,V = flock_sim.runSim()
 
+# Save simulation array?
+save_array = input("Do you want to save the simulation array? [y/n]: ") != 'n'
+if save_array:
+    np.save(ani_params.fname,X)
+
+
 #########
 # Animate
 #########
 
-if ani_params.save:
-    np.save(ani_params.fname,X)
-
-if ani_params.show:
-    if ani_params.quiver:
-        flock = QA(X,0.01*V/norm(V,axis=2,keepdims=True))
-        flock.animate(fname=ani_params.fname,show=ani_params.show)
-    else:
-        flock = SA(X)
-        flock.animate(fname=ani_params.fname,show=ani_params.show)
+if ani_params.quiver:
+    flock = QuiverAnimation(X,0.01*V/norm(V,axis=2,keepdims=True))
+    flock.animate(show=ani_params.show,save=ani_params.save,fname=ani_params.fname)
+else:
+    flock = ScatterAnimation(X)
+    flock.animate(show=ani_params.show,save=ani_params.save,fname=ani_params.fname)
 
 

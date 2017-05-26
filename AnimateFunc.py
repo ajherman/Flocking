@@ -4,6 +4,17 @@ import matplotlib.animation as animation
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib
 
+class Animation():
+
+    def __init__(self):
+        pass
+
+    def update(self):
+        pass
+
+    def animate(self):
+        pass
+
 class ScatterAnimation():
 
     def __init__(self,Q):
@@ -48,11 +59,11 @@ class ScatterAnimation():
             print("Invalid dimension for animation array")
             assert(False)
 
-    def animate(self,fname=None,show=True):
+    def animate(self,show=True,save=False,fname=None):
 
         ani = matplotlib.animation.FuncAnimation(self.fig,self.update,frames=range(self.num_iters),interval=20)
         
-        if fname != None:
+        if save and fname != None:
             ani.save(fname+".mp4",fps=20)
     
         if show:
@@ -111,14 +122,13 @@ class QuiverAnimation():
             print("Invalid dimension for animation array")
             assert(False)
 
-    def animate(self,fname=None,show=True):
+    def animate(self,show=True,save=False,fname=None):
 
         ani = matplotlib.animation.FuncAnimation(self.fig,self.update,frames=range(self.num_iters),interval=20)
         
-        if fname != None:
-            ani.save(fname+".avi",fps=20,bitrate=-1,dpi=100)
+        if save and fname != None:
+            ani.save(fname+".mp4",fps=20)
     
         if show:
             plt.show()
-
 
