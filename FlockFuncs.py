@@ -38,41 +38,6 @@ class OlfatiFlockingSimulation(FlockingSimulation):
 
     def phi_a(self,z):
         return self.rho_h(z/self.r_a)*self.ph9eful functions
-    ##################
-    
-    def sig_norm(z): # Sigma norm
-            return (np.sqrt(1+eps*np.sum(z**2,axis=2).reshape((num_boids,num_boids,1)))-1)/eps
-        
-        def sig_grad(z,norm=None,eps=eps): # Gradient of sigma norm
-                if type(norm) == "NoneType":
-                            return z/(1+eps*sig_norm(z))
-                            else:
-                                        return z/(1+eps*norm)
-                                        
-                                    def rho_h(z):
-                                            return  np.logical_and(z>=0,z<h)+np.logical_and(z<=1,z>=h)*(0.5*(1+np.cos(np.pi*(z-h)/(1-h))))
-                                        
-                                        def phi(z):
-                                                return 0.5*((a+b)*sig_grad(z+c,1)+(a-b))
-                                            
-                                            def phi_a(z):
-                                                    return rho_h(z/r_a)*phi(z-d_a)
-                                                    
-                                                def differences(q):
-                                                        return q[:,None,:] - q
-                                                    
-                                                    def uUpdate(q,p):
-                                                            diff=differences(q)
-                                                                norms = sig_norm(diff)
-                                                                    diffp=differences(p)
-                                                                        return np.sum(phi_a(norms)*sig_grad(diff,norms),axis=0)+np.sum(rho_h(norms/r_a)*diffp,axis=0)
-                                                                    
-                                                                    def differentiate(v):
-                                                                            dv = v.copy()
-                                                                                dv[1:]-=v[:-1]
-                                                                                    return dv/dt
-                                                                                (z-self.d_a)
-        
     def differences(self,q):
         return q[:,None,:] - q
 

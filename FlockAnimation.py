@@ -20,9 +20,6 @@ from FlockFuncs import OlfatiFlockingSimulation
 sim_params = SimulationParams()
 sim_params.getUserInput()
 
-#eps,d,r,d_a,r_a,a,b,c,h,dt,c_q,c_p,num_boids,num_iters,dim = sim_params.eps,sim_params.d,sim_params.r,sim_params.d_a,sim_params.r_a,sim_params.a,sim_params.b,sim_params.c,sim_params.h,sim_params.dt,sim_params.c_q,sim_params.c_p,sim_params.num_boids,sim_params.num_iters,sim_params.dim
-#
-
 ####################################
 # Get animation parameters from user
 ####################################
@@ -36,6 +33,7 @@ ani_params.getUserInput()
 
 flock_sim = OlfatiFlockingSimulation()
 
+# Set simulation parameters
 flock_sim.eps,flock_sim.num_boids,flock_sim.a,flock_sim.b,flock_sim.c,flock_sim.h,flock_sim.r_a,flock_sim.d_a,flock_sim.dt = sim_params.eps,sim_params.num_boids,sim_params.a,sim_params.b,sim_params.c,sim_params.h,sim_params.r_a,sim_params.d_a,sim_params.dt
 
 #####################
