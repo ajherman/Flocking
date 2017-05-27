@@ -30,6 +30,7 @@ class SimulationParams(Params):
         self.num_boids = None
         self.num_iters = None
         self.dim = None
+        self.gamma_pat=None
 
     def getUserInput(self):
 
