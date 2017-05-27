@@ -10,10 +10,9 @@ Created on Tue May 16 21:46:44 2017
 import numpy as np
 from sklearn.preprocessing import normalize
 from numpy.linalg import norm
-from AnimateFunc import ScatterAnimation 
-from AnimateFunc import QuiverAnimation 
-from UserInput import SimulationParams, AnimationParams
-from FlockFuncs import OlfatiFlockingSimulation, OlfatiFlockingSimulationTF
+from FlockAnimation import ScatterAnimation,QuiverAnimation 
+from FlockParameters import SimulationParams, AnimationParams
+from FlockSimulation import OlfatiFlockingSimulation, OlfatiFlockingSimulationTF
 
 ###########################
 # Set simulation parameters
@@ -74,7 +73,7 @@ for run_method in ['NP','TF']:
 print("Quiver animation test:  ", end = "")
 try:
     flock = QuiverAnimation(X,0.01*V/norm(V,axis=2,keepdims=True))
-    flock.animate(show=False,save=True,fname="Quiver test")
+    flock.animate(show=False,save=True,fname="Quiver_test")
     print("Pass!")
 except:
     print("Fail.")
@@ -84,9 +83,9 @@ except:
 print("Scatter animation test:  ", end = "")
 try:
     flock = ScatterAnimation(X)
-    flock.animate(show=False,save=True,fname="Scatter test")
+    flock.animate(show=False,save=True,fname="Scatter_test")
     print("Pass!")
 except:
     print("Fail.")
 
-print("There should be two animations in folder")
+print("There should be two animations in folder: Quiver_test.mp4 and Scatter_test.mp4")

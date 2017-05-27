@@ -1,4 +1,4 @@
-#User input# User input
+# Params object stores static and user-defined parameters
 
 import numpy as np
 
@@ -30,7 +30,7 @@ class SimulationParams(Params):
         self.num_boids = None
         self.num_iters = None
         self.dim = None
-        self.gamma_pat=None
+        self.gamma_path = None
 
     def getUserInput(self):
 

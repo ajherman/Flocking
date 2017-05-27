@@ -1,73 +1,135 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue May 16 21:46:44 2017
-
-@author: Ari
-"""
-
 import numpy as np
-from sklearn.preprocessing import normalize
-from numpy.linalg import norm
-from AnimateFunc import ScatterAnimation 
-from AnimateFunc import QuiverAnimation 
-from UserInput import SimulationParams, AnimationParams
-from FlockFuncs import OlfatiFlockingSimulation, OlfatiFlockingSimulationTF
+from matplotlib import pyplot as plt
+import matplotlib.animation as animation
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib
 
-#####################################
-# Get simulation parameters from user
-#####################################
+class Animation():
 
-sim_params = SimulationParams()
-sim_params.getUserInput()
-run_method = input("Do you want to run this simulation with Numpy or Tensorflow? ['NP'/'TF']: ")
+    def __init__(self):
+        pass
 
-####################################
-# Get animation parameters from user
-####################################
+    def update(self):
+        pass
 
-ani_params = AnimationParams()
-ani_params.getUserInput()
-
-###########################
-# Setup flocking simulation
-###########################
-
-if run_method == 'NP':
-    flock_sim = OlfatiFlockingSimulation()
-elif run_method == 'TF':
-    flock_sim = OlfatiFlockingSimulationTF()
-else:
-    print("Invalid run method.  Must select Numpy or Tensorflow. ['NP'/'TF']")
-    assert(False)
-
-# Set simulation parameters
-flock_sim.eps,flock_sim.num_boids,flock_sim.a,flock_sim.b,flock_sim.c,flock_sim.h,flock_sim.r_a,flock_sim.d_a,flock_sim.dt,flock_sim.num_iters,flock_sim.gamma_path,flock_sim.dim,flock_sim.c_q,flock_sim.c_p = sim_params.eps,sim_params.num_boids,sim_params.a,sim_params.b,sim_params.c,sim_params.h,sim_params.r_a,sim_params.d_a,sim_params.dt,sim_params.num_iters,sim_params.gamma_path,sim_params.dim,sim_params.c_q,sim_params.c_p
-
-################
-# Run simulation
-################
-
-# Init simulation
-flock_sim.initSim()
-
-# Run simulation
-X,V = flock_sim.runSim()
-
-# Save simulation array?
-save_array = input("Do you want to save the simulation array? [y/n]: ") != 'n'
-if save_array:
-    np.save(ani_params.fname,X)
+    def animate(self):
+        pass
 
 
-#########
-# Animate
-#########
+class ScatterAnimation(Animation):
 
-if ani_params.quiver:
-    flock = QuiverAnimation(X,0.01*V/norm(V,axis=2,keepdims=True))
-    flock.animate(show=ani_params.show,save=ani_params.save,fname=ani_params.fname)
-else:
-    flock = ScatterAnimation(X)
-    flock.animate(show=ani_params.show,save=ani_params.save,fname=ani_params.fname)
+    def __init__(self,Q):
+        
+        assert(isinstance(Q,np.ndarray))
 
+        self.num_iters,self.num_points,self.dim = np.shape(Q)
+        self.fig = plt.figure()
+
+        if self.dim == 2:
+            self.Q = Q
+            self.ax = self.fig.add_axes([0, 0, 1, 1])
+            self.ax.set_xlim(-2, 2)
+            self.ax.set_xticks([])
+            self.ax.set_ylim(-2,2)
+            self.ax.set_yticks([])
+            self.sc = plt.scatter(self.Q[0,:,0],self.Q[0,:,1],s=5)
+
+        elif self.dim == 3:
+            self.Q = np.swapaxes(Q,1,2) # Necessary re-ordering of axes
+
+            # Set axes
+            self.ax = self.fig.add_subplot(111, projection='3d')
+            self.ax.set_xlim3d([-2,2])
+            self.ax.set_ylim3d([-2,2])
+            self.ax.set_zlim3d([-2,2])
+            
+            # Init points
+            self.sc = self.ax.scatter(self.Q[0,0],self.Q[0,1],self.Q[0,2],s=5)
+
+        else:
+            print("Invalid dimension for animation array")
+            assert(False)
+
+    def update(self,num):
+        
+        if self.dim == 2:
+            self.sc.set_offsets(self.Q[num])
+        elif self.dim == 3:
+            self.sc._offsets3d = self.Q[num]
+        else:
+            print("Invalid dimension for animation array")
+            assert(False)
+
+    def animate(self,show=True,save=False,fname=None):
+
+        ani = matplotlib.animation.FuncAnimation(self.fig,self.update,frames=range(self.num_iters),interval=20)
+        
+        if save and fname != None:
+            ani.save(fname+".mp4",fps=20)
+    
+        if show:
+            plt.show()
+
+
+class QuiverAnimation(Animation):
+    
+    def __init__(self,Q,P):
+        
+        assert(isinstance(Q,np.ndarray))
+        assert(isinstance(P,np.ndarray))
+        assert(np.shape(Q) == np.shape(P))
+
+        self.num_iters,self.num_points,self.dim = np.shape(Q)
+        self.fig = plt.figure()
+
+        if self.dim == 2:
+            self.Q = Q
+            self.P = P
+            self.ax = self.fig.add_axes([0, 0, 1, 1])
+            self.ax.set_xlim(-2, 2)
+            self.ax.set_xticks([])
+            self.ax.set_ylim(-2,2)
+            self.ax.set_yticks([])
+            self.sc = plt.quiver(self.Q[0,:,0],self.Q[0,:,1],self.P[0,:,0],self.P[0,:,1])
+
+        elif self.dim == 3:
+            self.Q = np.swapaxes(Q,1,2) # Necessary re-ordering of axes
+            self.P = np.swapaxes(P,1,2)
+            # Set axes
+            self.ax = self.fig.add_subplot(111, projection='3d')
+            self.ax.set_xlim3d([-2,2])
+            self.ax.set_ylim3d([-2,2])
+            self.ax.set_zlim3d([-2,2])
+            
+            # Init points
+            self.sc = self.ax.quiver(self.Q[0,0],self.Q[0,1],self.Q[0,2],self.P[0,0],self.P[0,1],self.P[0,2],length=0.2,lw=1)
+
+        else:
+            print("Invalid dimension for animation array")
+            assert(False)
+
+    def update(self,num):
+        
+        if self.dim == 2:
+            self.sc.set_offsets(self.Q[num])
+            self.sc.set_UVC(self.P[num,:,0],self.P[num,:,1])
+        elif self.dim == 3:
+            self.ax.clear()
+            self.ax.set_xlim3d([-2,2])
+            self.ax.set_ylim3d([-2,2])
+            self.ax.set_zlim3d([-2,2])
+            self.ax.quiver(self.Q[num,0],self.Q[num,1],self.Q[num,2],self.P[num,0],self.P[num,1],self.P[num,2],length=0.2,lw=1)
+        else:
+            print("Invalid dimension for animation array")
+            assert(False)
+
+    def animate(self,show=True,save=False,fname=None):
+
+        ani = matplotlib.animation.FuncAnimation(self.fig,self.update,frames=range(self.num_iters),interval=20)
+        
+        if save and fname != None:
+            ani.save(fname+".mp4",fps=20)
+    
+        if show:
+            plt.show()
 
