@@ -5,7 +5,6 @@ from mpl_toolkits.mplot3d import Axes3D
 import matplotlib
 
 class Animation():
-
     def __init__(self):
         pass
 
@@ -17,9 +16,7 @@ class Animation():
 
 
 class ScatterAnimation(Animation):
-
     def __init__(self,Q):
-        
         assert(isinstance(Q,np.ndarray))
 
         self.num_iters,self.num_points,self.dim = np.shape(Q)
@@ -51,17 +48,17 @@ class ScatterAnimation(Animation):
             assert(False)
 
     def update(self,num):
-        
         if self.dim == 2:
             self.sc.set_offsets(self.Q[num])
+        
         elif self.dim == 3:
             self.sc._offsets3d = self.Q[num]
+        
         else:
             print("Invalid dimension for animation array")
             assert(False)
 
     def animate(self,show=True,save=False,fname=None):
-
         ani = matplotlib.animation.FuncAnimation(self.fig,self.update,frames=range(self.num_iters),interval=20)
         
         if save and fname != None:
@@ -72,9 +69,7 @@ class ScatterAnimation(Animation):
 
 
 class QuiverAnimation(Animation):
-    
     def __init__(self,Q,P):
-        
         assert(isinstance(Q,np.ndarray))
         assert(isinstance(P,np.ndarray))
         assert(np.shape(Q) == np.shape(P))
@@ -109,22 +104,22 @@ class QuiverAnimation(Animation):
             assert(False)
 
     def update(self,num):
-        
         if self.dim == 2:
             self.sc.set_offsets(self.Q[num])
             self.sc.set_UVC(self.P[num,:,0],self.P[num,:,1])
+        
         elif self.dim == 3:
             self.ax.clear()
             self.ax.set_xlim3d([-2,2])
             self.ax.set_ylim3d([-2,2])
             self.ax.set_zlim3d([-2,2])
             self.ax.quiver(self.Q[num,0],self.Q[num,1],self.Q[num,2],self.P[num,0],self.P[num,1],self.P[num,2],length=0.2,lw=1)
+        
         else:
             print("Invalid dimension for animation array")
             assert(False)
 
     def animate(self,show=True,save=False,fname=None):
-
         ani = matplotlib.animation.FuncAnimation(self.fig,self.update,frames=range(self.num_iters),interval=20)
         
         if save and fname != None:
