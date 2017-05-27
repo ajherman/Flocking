@@ -17,8 +17,7 @@ class FlockingSimulation():
 
 class OlfatiFlockingSimulation(FlockingSimulation):
 
-    def __init__(self):
-
+    def __init__(self): 
         self.eps=None
         self.num_boids=None
         self.num_iters=None
