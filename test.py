@@ -36,7 +36,7 @@ for run_method in ['NP','TF']:
                 flock_sim = OlfatiFlockingSimulation()
             
             elif run_method == 'TF':
-                flock_sim = OlfatiFlockingSimulation()
+                flock_sim = OlfatiFlockingSimulationTF()
             
             else:
                 assert("Invalid dimension given in test program")

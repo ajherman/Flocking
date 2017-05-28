@@ -67,12 +67,12 @@ class OlfatiFlockingSimulation(FlockingSimulation):
     def makeGamma(self): # Generates/sets trajectory for gamma agent
         if self.params.dim == 2:
             if self.params.gamma_path == "circle":
-                x=np.cos(np.linspace(0,2*np.pi,self.params.num_iters))
-                y=np.sin(np.linspace(0,2*np.pi,self.params.num_iters))
+                x=np.cos(np.linspace(0,2*np.pi*self.params.num_iters/200.,self.params.num_iters))
+                y=np.sin(np.linspace(0,2*np.pi*self.params.num_iters/200.,self.params.num_iters))
 
             elif self.params.gamma_path == "eight":
-                x=np.cos(np.linspace(0,2*np.pi,self.params.num_iters))
-                y=np.sin(np.linspace(0,4*np.pi,self.params.num_iters))
+                x=np.cos(np.linspace(0,2*np.pi*self.params.num_iters/200.,self.params.num_iters))
+                y=np.sin(np.linspace(0,4*np.pi*self.params.num_iters/200.,self.params.num_iters))
             
             else:
                 print("Not a valid gamma agent path for dimension 2")
@@ -83,14 +83,14 @@ class OlfatiFlockingSimulation(FlockingSimulation):
 
         elif self.params.dim ==3:
             if self.params.gamma_path == "circle":    
-                x=np.cos(np.linspace(0,2*np.pi,self.params.num_iters))
-                y=np.sin(np.linspace(0,2*np.pi,self.params.num_iters))
+                x=np.cos(np.linspace(0,2*np.pi*self.params.num_iters/200.,self.params.num_iters))
+                y=np.sin(np.linspace(0,2*np.pi*self.params.num_iters/200.,self.params.num_iters))
                 z=np.zeros(self.params.num_iters)
             
             elif self.params.gamma_path == "wild":
-                x=np.cos(np.linspace(0,2*np.pi,self.params.num_iters))
-                y=np.cos(np.linspace(0,4*np.pi,self.params.num_iters))
-                z=np.sin(np.linspace(0,8*np.pi,self.params.num_iters))
+                x=np.cos(np.linspace(0,2*np.pi*self.params.num_iters/200.,self.params.num_iters))
+                y=np.cos(np.linspace(0,4*np.pi*self.params.num_iters/200.,self.params.num_iters))
+                z=np.sin(np.linspace(0,8*np.pi*self.params.num_iters/200.,self.params.num_iters))
 
             else:
                 print("Not a valid gamma agent path for dimension 3")
@@ -152,7 +152,7 @@ class OlfatiFlockingSimulationTF(FlockingSimulation):
             return z/(1+self.params.eps*norm)
 
     def rho_h(self,z):
-        return tf.to_float(tf.logical_and(z>=0,z<self.params.h))+tf.to_float(tf.logical_and(z<=1,z>=self.params.h))*(0.5*(1+tf.cos(np.pi*(z-self.params.h)/(1-self.params.h))))
+        return tf.to_float(tf.logical_and(z>=0,z<self.params.h)) +tf.to_float(tf.logical_and(z<=1,z>=self.params.h))*(0.5*(1+tf.cos(np.pi*(z-self.params.h)/(1-self.params.h))))
 
     def phi(self,z):
         return 0.5*((self.params.a+self.params.b)*self.sig_grad(z+self.params.c,1)+(self.params.a-self.params.b))
@@ -182,11 +182,11 @@ class OlfatiFlockingSimulationTF(FlockingSimulation):
 
         if self.params.dim == 2:            
             if self.params.gamma_path == "circle":
-                x=tf.cast(tf.cos(np.linspace(0,2*np.pi,self.params.num_iters)),tf.float32)
-                y=tf.cast(tf.sin(np.linspace(0,2*np.pi,self.params.num_iters)),tf.float32)
+                x=tf.cast(tf.cos(np.linspace(0,2*np.pi*self.params.num_iters/200.,self.params.num_iters)),tf.float32)
+                y=tf.cast(tf.sin(np.linspace(0,2*np.pi*self.params.num_iters/200.,self.params.num_iters)),tf.float32)
             elif self.params.gamma_path == "eight":
-                x=tf.cast(tf.cos(np.linspace(0,2*np.pi,self.params.num_iters)),tf.float32)
-                y=tf.cast(tf.sin(np.linspace(0,4*np.pi,self.params.num_iters)),tf.float32)
+                x=tf.cast(tf.cos(np.linspace(0,2*np.pi*self.params.num_iters/200.,self.params.num_iters)),tf.float32)
+                y=tf.cast(tf.sin(np.linspace(0,4*np.pi*self.params.num_iters/200.,self.params.num_iters)),tf.float32)
             else:
                 print("Not a valid gamma agent path for dimensions 2")
                 assert(False)
@@ -197,13 +197,13 @@ class OlfatiFlockingSimulationTF(FlockingSimulation):
         elif self.params.dim == 3:
             if self.params.gamma_path == "circle":    
                 # Gamma agent (moves in a circle)
-                x=tf.cast(tf.cos(np.linspace(0,2*np.pi,self.params.num_iters)),tf.float32)
-                y=tf.cast(tf.sin(np.linspace(0,2*np.pi,self.params.num_iters)),tf.float32)
+                x=tf.cast(tf.cos(np.linspace(0,2*np.pi*self.params.num_iters/200.,self.params.num_iters)),tf.float32)
+                y=tf.cast(tf.sin(np.linspace(0,2*np.pi*self.params.num_iters/200.,self.params.num_iters)),tf.float32)
                 z=tf.cast(tf.zeros(self.params.num_iters),tf.float32)
             elif self.params.gamma_path == "wild":
-                x=tf.cast(tf.cos(np.linspace(0,2*np.pi,self.params.num_iters)),tf.float32)
-                y=tf.cast(tf.cos(np.linspace(0,4*np.pi,self.params.num_iters)),tf.float32)
-                z=tf.cast(tf.sin(np.linspace(0,8*np.pi,self.params.num_iters)),tf.float32)
+                x=tf.cast(tf.cos(np.linspace(0,2*np.pi*self.params.num_iters/200.,self.params.num_iters)),tf.float32)
+                y=tf.cast(tf.cos(np.linspace(0,4*np.pi*self.params.num_iters/200.,self.params.num_iters)),tf.float32)
+                z=tf.cast(tf.sin(np.linspace(0,8*np.pi*self.params.num_iters/200.,self.params.num_iters)),tf.float32)
         
             else:
                 print("Not a vaild gamma agent path for dimension 3")
@@ -218,8 +218,8 @@ class OlfatiFlockingSimulationTF(FlockingSimulation):
 
     def initSim(self): # Must call before runSim
         # Random init boids 
-        self.q=tf.Variable(self.params.q_init) #tf.Variable(tf.random_uniform((self.params.num_boids,self.params.dim)))
-        self.p=tf.Variable(self.params.p_init) #tf.Variable(0.01*tf.random_uniform((self.params.num_boids,self.params.dim)))
+        self.q=tf.Variable(self.params.q_init,dtype=tf.float32) 
+        self.p=tf.Variable(self.params.p_init,dtype=tf.float32) 
         # Init gamma agent
         self.makeGamma()
 
