@@ -104,8 +104,9 @@ class OlfatiFlockingSimulation(FlockingSimulation):
 
     def initSim(self): # Must be called before runSim       
         # Random init boids 
-        self.q=self.params.q_init # np.random.normal(0.0,1.0,size=(self.params.num_boids,self.params.dim))
-        self.p=self.params.p_init # 0.01*np.random.rand(self.params.num_boids,self.params.dim)
+        self.q=self.params.q_init 
+        self.p=self.params.p_init 
+
         # Init gamma agent
         self.makeGamma()        
 
@@ -217,8 +218,8 @@ class OlfatiFlockingSimulationTF(FlockingSimulation):
 
     def initSim(self): # Must call before runSim
         # Random init boids 
-        self.q=tf.Variable(tf.random_uniform((self.params.num_boids,self.params.dim)))
-        self.p=tf.Variable(0.01*tf.random_uniform((self.params.num_boids,self.params.dim)))
+        self.q=tf.Variable(self.params.q_init) #tf.Variable(tf.random_uniform((self.params.num_boids,self.params.dim)))
+        self.p=tf.Variable(self.params.p_init) #tf.Variable(0.01*tf.random_uniform((self.params.num_boids,self.params.dim)))
         # Init gamma agent
         self.makeGamma()
 

@@ -11,7 +11,8 @@ import matplotlib
 # General purpose animation class
 #################################
 class Animation():
-    def __init__(self):
+    def __init__(self,ran=2.):
+        self.range = ran
         pass
 
     def update(self):
@@ -24,11 +25,13 @@ class Animation():
 # Scatter plot animations
 #########################
 class ScatterAnimation(Animation):
-    def __init__(self,Q):
+    def __init__(self,Q,ran=2.):
         assert(isinstance(Q,np.ndarray))
         
         self.num_iters,self.num_points,self.dim = np.shape(Q)
         
+        self.range = ran # Max/min value for axes
+
         # Set up figure
         self.fig = plt.figure()
 
@@ -37,9 +40,9 @@ class ScatterAnimation(Animation):
 
             # Set axes
             self.ax = self.fig.add_axes([0, 0, 1, 1])
-            self.ax.set_xlim(-2, 2)
+            self.ax.set_xlim(-self.range,self.range)
             self.ax.set_xticks([])
-            self.ax.set_ylim(-2,2)
+            self.ax.set_ylim(-self.range,self.range)
             self.ax.set_yticks([])
 
             # Plot init points
@@ -50,9 +53,9 @@ class ScatterAnimation(Animation):
 
             # Set axes
             self.ax = self.fig.add_subplot(111, projection='3d')
-            self.ax.set_xlim3d([-2,2])
-            self.ax.set_ylim3d([-2,2])
-            self.ax.set_zlim3d([-2,2])
+            self.ax.set_xlim3d([-self.range,self.range])
+            self.ax.set_ylim3d([-self.range,self.range])
+            self.ax.set_zlim3d([-self.range,self.range])
             
             # Plot init points
             self.sc = self.ax.scatter(self.Q[0,0],self.Q[0,1],self.Q[0,2],s=5)
@@ -85,12 +88,14 @@ class ScatterAnimation(Animation):
 # Vector animations
 ###################
 class QuiverAnimation(Animation):
-    def __init__(self,Q,P):
+    def __init__(self,Q,P,ran=2.):
         assert(isinstance(Q,np.ndarray))
         assert(isinstance(P,np.ndarray))
         assert(np.shape(Q) == np.shape(P))
         
         self.num_iters,self.num_points,self.dim = np.shape(Q)
+
+        self.range = ran
 
         # Setup figure
         self.fig = plt.figure()
@@ -102,9 +107,9 @@ class QuiverAnimation(Animation):
             
             # Set axes
             self.ax = self.fig.add_axes([0, 0, 1, 1])
-            self.ax.set_xlim(-2, 2)
+            self.ax.set_xlim(-self.range,self.range)
             self.ax.set_xticks([])
-            self.ax.set_ylim(-2,2)
+            self.ax.set_ylim(-self.range,self.range)
             self.ax.set_yticks([])
 
             # Plot init points
@@ -117,9 +122,9 @@ class QuiverAnimation(Animation):
             
             # Set axes
             self.ax = self.fig.add_subplot(111, projection='3d')
-            self.ax.set_xlim3d([-2,2])
-            self.ax.set_ylim3d([-2,2])
-            self.ax.set_zlim3d([-2,2])
+            self.ax.set_xlim3d([-self.range,self.range])
+            self.ax.set_ylim3d([-self.range,self.range])
+            self.ax.set_zlim3d([-self.range,self.range])
             
             # Plot init points
             self.sc = self.ax.quiver(self.Q[0,0],self.Q[0,1],self.Q[0,2],self.P[0,0],self.P[0,1],self.P[0,2],length=0.2,lw=1)
