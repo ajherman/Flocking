@@ -37,6 +37,8 @@ class SimulationParams(Params):
         self.num_iters = None
         self.dim = None
         self.gamma_path = None
+        self.q_init = None
+        self.p_init = None
 
     def getUserInput(self):
         # Get parameters from user
@@ -53,6 +55,9 @@ class SimulationParams(Params):
         else:
             print("Invalid dimension")
             assert(False)
+
+        self.q_init = np.random.normal(0.0,1.0,size=(self.num_boids,self.dim))
+        self.p_init = np.random.normal(0.0,0.1,size=(self.num_boids,self.dim))
 
 ##################################
 # Stores parameters for animations

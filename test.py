@@ -48,7 +48,11 @@ for run_method in ['NP','TF']:
 
             # Set gamma path
             sim_params.gamma_path = 'circle'
-
+            
+            # Init points
+            sim_params.q_init = np.random.normal(0.0,1.0,size=(sim_params.num_boids,sim_params.dim))
+            sim_params.p_init = np.random.normal(0.0,0.1,size=(sim_params.num_boids,sim_params.dim))
+            
             # Set simulation parameters
             flock_sim.params = sim_params
         
@@ -71,7 +75,7 @@ for run_method in ['NP','TF']:
 print("Quiver animation test:  ", end = "")
 
 try:
-    flock = QuiverAnimation(X,0.01*V/norm(V,axis=2,keepdims=True))
+    flock = QuiverAnimation(X,V)
     flock.animate(show=False,save=True,fname="Quiver_test")
     print("Pass!")
 

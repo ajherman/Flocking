@@ -1,6 +1,7 @@
 # Authors: Ari Herman & Taiyo Terada
 
 import numpy as np
+from scipy.linalg import norm
 from matplotlib import pyplot as plt
 import matplotlib.animation as animation
 from mpl_toolkits.mplot3d import Axes3D
@@ -88,15 +89,16 @@ class QuiverAnimation(Animation):
         assert(isinstance(Q,np.ndarray))
         assert(isinstance(P,np.ndarray))
         assert(np.shape(Q) == np.shape(P))
-
-        self.num_iters,self.num_points,self.dim = np.shape(Q)
         
+        self.num_iters,self.num_points,self.dim = np.shape(Q)
+
         # Setup figure
         self.fig = plt.figure()
 
         if self.dim == 2:
             self.Q = Q
             self.P = P
+            self.P = 0.01*self.P/norm(self.P,axis=2,keepdims=True) # Normalize P
             
             # Set axes
             self.ax = self.fig.add_axes([0, 0, 1, 1])
@@ -111,6 +113,7 @@ class QuiverAnimation(Animation):
         elif self.dim == 3:
             self.Q = np.swapaxes(Q,1,2) # Necessary re-ordering of axes
             self.P = np.swapaxes(P,1,2)
+            self.P = 0.01*self.P/norm(self.P,axis=2,keepdims=True) # Normalize P
             
             # Set axes
             self.ax = self.fig.add_subplot(111, projection='3d')

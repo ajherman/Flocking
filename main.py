@@ -65,7 +65,7 @@ if save_array:
 #########
 
 if ani_params.quiver:
-    flock = QuiverAnimation(X,0.01*V/norm(V,axis=2,keepdims=True))
+    flock = QuiverAnimation(X,V)
     flock.animate(show=ani_params.show,save=ani_params.save,fname=ani_params.fname)
 
 else:

@@ -104,8 +104,8 @@ class OlfatiFlockingSimulation(FlockingSimulation):
 
     def initSim(self): # Must be called before runSim       
         # Random init boids 
-        self.q=np.random.normal(0.0,1.0,size=(self.params.num_boids,self.params.dim))
-        self.p=0.01*np.random.rand(self.params.num_boids,self.params.dim)
+        self.q=self.params.q_init # np.random.normal(0.0,1.0,size=(self.params.num_boids,self.params.dim))
+        self.p=self.params.p_init # 0.01*np.random.rand(self.params.num_boids,self.params.dim)
         # Init gamma agent
         self.makeGamma()        
 
