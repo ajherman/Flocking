@@ -3,7 +3,6 @@
 # Prompts user for input and runs flocking simulation using Algorithm 2 from Olfati paper
 
 import numpy as np
-from numpy.linalg import norm
 from FlockAnimation import ScatterAnimation,QuiverAnimation 
 from FlockParameters import SimulationParams, AnimationParams
 from FlockSimulation import OlfatiFlockingSimulation, OlfatiFlockingSimulationTF

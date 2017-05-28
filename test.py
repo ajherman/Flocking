@@ -3,8 +3,6 @@
 # Runs tests on the other files.  Make sure this passes before merging to dev or master!
 
 import numpy as np
-from sklearn.preprocessing import normalize
-from numpy.linalg import norm
 from FlockAnimation import ScatterAnimation,QuiverAnimation 
 from FlockParameters import SimulationParams, AnimationParams
 from FlockSimulation import OlfatiFlockingSimulation, OlfatiFlockingSimulationTF

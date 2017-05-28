@@ -3,11 +3,13 @@
 # Displays counter example to lemma 3 from Olfati paper
 
 import numpy as np
-from scipy.linalg import norm
 from FlockParameters import SimulationParams, AnimationParams
 from FlockSimulation import OlfatiFlockingSimulation
 from FlockAnimation import ScatterAnimation,QuiverAnimation
 from matplotlib import pyplot as plt
+
+# WIP
+#############################################################
 
 def dist1(X):
     return np.sqrt(np.sum((X[:,0,:]-X[:,1,:])**2,axis=1))
@@ -23,6 +25,10 @@ def potential(X):
             ans += np.abs(np.sqrt(np.sum((X[:,i,:]-X[:,j,:])**2,axis=1))-sim_params.d)
     return ans
 
+################################################################
+
+
+
 ###########################
 # Set simulation parameters
 ###########################
@@ -33,14 +39,14 @@ sim_params.c_p = 0
 sim_params.c_q = 0
 sim_params.num_boids = 4
 sim_params.gamma_path = 'circle'
-sim_params.d = 7.0 # 0.8
-sim_params.r = 1.2*d # 1.6*d
+sim_params.d = 0.8 #7.0 # 0.8
+sim_params.r =  1.6*sim_params.d
 sim_params.d_a = (np.sqrt(1+sim_params.eps*sim_params.d**2)-1)/sim_params.eps
 sim_params.r_a = (np.sqrt(1+sim_params.eps*sim_params.r**2)-1)/sim_params.eps
 sim_params.num_iters = 20000
 
 # Init points
-d=sim_params.d
+d=1.5
 sim_params.q_init = np.array([[0,0],[0,d*np.sqrt(3)/3],[-d/2,-d*np.sqrt(3)/6],[d/2,-d*np.sqrt(3)/6]])
 sim_params.p_init = np.zeros((sim_params.num_boids,sim_params.dim))
 
@@ -75,7 +81,7 @@ flock_sim.initSim()
 
 # Run sim
 X,V = flock_sim.runSim()
-print(np.shape(X))
+
 # Save simulation array
 save_array = input("Do you want to save the simmulation array? [y/n]: ")
 if save_array == 'y':
@@ -95,8 +101,10 @@ flock.animate(show=ani_params.show,save=ani_params.save,fname=ani_params.fname)
 
 
 
+
+# WIP
 ##################################
-# Graphing potential and stuff WIP
+# Graphing potential and stuff 
 p=potential(X)
 plt.plot(p)
 plt.show()
@@ -108,3 +116,5 @@ plt.plot(d2)
 plt.show()
 print(d1)
 print(d2)
+
+#####################################
