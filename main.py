@@ -1,9 +1,6 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue May 16 21:46:44 2017
+# Authors: Ari Herman & Taiyo Terada
 
-@author: Ari
-"""
+# Prompts user for input and runs flocking simulation using Algorithm 2 from Olfati paper
 
 import numpy as np
 from numpy.linalg import norm

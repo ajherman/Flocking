@@ -1,4 +1,4 @@
-# Params object stores static and user-defined parameters
+# Authors: Ari Herman & Taiyo Terada
 
 import numpy as np
 

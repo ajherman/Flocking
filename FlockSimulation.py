@@ -1,3 +1,5 @@
+# Authors: Ari Herman & Taiyo Terada
+
 import numpy as np
 import tensorflow as tf
 

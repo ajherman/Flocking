@@ -1,11 +1,6 @@
+# Authors: Ari Herman & Taiyo Terada
+
 # Runs tests on the other files.  Make sure this passes before merging to dev or master!
-
-# -*- coding: utf-8 -*-
-"""
-Created on Tue May 16 21:46:44 2017
-
-@author: Ari
-"""
 
 import numpy as np
 from sklearn.preprocessing import normalize
