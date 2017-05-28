@@ -1,6 +1,9 @@
 import numpy as np
 import tensorflow as tf
 
+####################################
+# Class for running flock simulation
+####################################
 class FlockingSimulation(): 
     def __init__(self):
         pass
@@ -11,6 +14,9 @@ class FlockingSimulation():
     def runSim(self):
         pass
 
+############################################################
+# Simulates flock with algorithm 2 from Olfati paper (Numpy)
+############################################################
 class OlfatiFlockingSimulation(FlockingSimulation):
     def __init__(self):
         self.params = None
@@ -18,6 +24,9 @@ class OlfatiFlockingSimulation(FlockingSimulation):
         self.p=None
         self.q_g=None
         self.p_g=None
+
+# FUNCTIONS FROM PAPER
+#########################################################################################################################
     
     def sig_norm(self,z): # Sigma norm
         return (np.sqrt(1+self.params.eps*np.sum(z**2,axis=2).reshape((self.params.num_boids,self.params.num_boids,1)))-1)/self.params.eps
@@ -37,7 +46,9 @@ class OlfatiFlockingSimulation(FlockingSimulation):
     def phi_a(self,z):
         return self.rho_h(z/self.params.r_a)*self.phi(z-self.params.d_a)
 
-    def differences(self,q):
+#########################################################################################################################
+
+    def differences(self,q): # Returns array of pairwise differences 
         return q[:,None,:] - q
 
     def uUpdate(self,q,p):
@@ -46,14 +57,12 @@ class OlfatiFlockingSimulation(FlockingSimulation):
         diffp=self.differences(p)
         return np.sum(self.phi_a(norms)*self.sig_grad(diff,norms),axis=0)+np.sum(self.rho_h(norms/self.params.r_a)*diffp,axis=0)
 
-    def differentiate(self,v):
+    def differentiate(self,v): # Differentiates vector
         dv = v.copy()
         dv[1:]-=v[:-1]
         return dv/self.params.dt
 
-    def makeGamma(self):
-
-        # Generate trajectory
+    def makeGamma(self): # Generates/sets trajectory for gamma agent
         if self.params.dim == 2:
             if self.params.gamma_path == "circle":
                 x=np.cos(np.linspace(0,2*np.pi,self.params.num_iters))
@@ -72,7 +81,6 @@ class OlfatiFlockingSimulation(FlockingSimulation):
 
         elif self.params.dim ==3:
             if self.params.gamma_path == "circle":    
-                # Gamma agent (moves in a circle)
                 x=np.cos(np.linspace(0,2*np.pi,self.params.num_iters))
                 y=np.sin(np.linspace(0,2*np.pi,self.params.num_iters))
                 z=np.zeros(self.params.num_iters)
@@ -92,14 +100,14 @@ class OlfatiFlockingSimulation(FlockingSimulation):
             print("Invalid dimension")
             assert("False")
 
-    def initSim(self):        
+    def initSim(self): # Must be called before runSim       
         # Random init boids 
         self.q=np.random.normal(0.0,1.0,size=(self.params.num_boids,self.params.dim))
         self.p=0.01*np.random.rand(self.params.num_boids,self.params.dim)
         # Init gamma agent
         self.makeGamma()        
 
-    def runSim(self):
+    def runSim(self): # Runs simulation and returns pos, vel data arrays
         X = np.zeros((self.params.num_iters,self.params.num_boids,self.params.dim))
         V = np.zeros((self.params.num_iters,self.params.num_boids,self.params.dim))
         for i in range(self.params.num_iters):
@@ -114,8 +122,11 @@ class OlfatiFlockingSimulation(FlockingSimulation):
         V = np.concatenate((V,self.p_g[:,None,:]),axis=1)
 
         return X,V
-            
 
+
+#################################################################
+# Simulates flock with algorithm 2 from Olfati paper (Tensorflow)
+#################################################################
 class OlfatiFlockingSimulationTF(FlockingSimulation):
     def __init__(self):
         self.params=None
@@ -123,6 +134,10 @@ class OlfatiFlockingSimulationTF(FlockingSimulation):
         self.p=None
         self.q_g=None
         self.p_g=None
+
+
+# FUNCTIONS FROM PAPER
+#########################################################################################################################
 
     def sig_norm(self,z):
         return tf.reshape( (tf.sqrt(1+self.params.eps*tf.reduce_sum(z**2,axis=2))-1)/self.params.eps , (self.params.num_boids,self.params.num_boids,1))
@@ -142,7 +157,9 @@ class OlfatiFlockingSimulationTF(FlockingSimulation):
     def phi_a(self,z):
         return self.rho_h(z/self.params.r_a)*self.phi(z-self.params.d_a)
         
-    def differences(self,q):
+#########################################################################################################################
+
+    def differences(self,q): # Returns array of pairwise differences
         return q[:,None,:] - q
 
     def uUpdate(self,q,p):
@@ -151,14 +168,14 @@ class OlfatiFlockingSimulationTF(FlockingSimulation):
         diffp=self.differences(p)
         return tf.reduce_sum(self.phi_a(norms)*self.sig_grad(diff,norms),axis=0)+tf.reduce_sum(self.rho_h(norms/self.params.r_a)*diffp,axis=0)
 
-    def differentiate(self,v):
+    def differentiate(self,v): # Differentiates vector
         dv = tf.identity(v)
         dv = dv[1:] - v[:-1]
         zeros = tf.zeros((dv[:1]).get_shape())
         dv = tf.concat([zeros,dv],0)  # I think this the argument order is reversed in newer tf
         return dv/self.params.dt
 
-    def makeGamma(self):
+    def makeGamma(self): # Generates/sets trajectory for gamma agent
 
         if self.params.dim == 2:            
             if self.params.gamma_path == "circle":
@@ -196,14 +213,14 @@ class OlfatiFlockingSimulationTF(FlockingSimulation):
             print("Invalid dimension")
             assert(False)
 
-    def initSim(self):        
+    def initSim(self): # Must call before runSim
         # Random init boids 
         self.q=tf.Variable(tf.random_uniform((self.params.num_boids,self.params.dim)))
         self.p=tf.Variable(0.01*tf.random_uniform((self.params.num_boids,self.params.dim)))
         # Init gamma agent
         self.makeGamma()
 
-    def runSim(self):
+    def runSim(self): # Runs simulations and returns pos, vel data arrays
         # Run simulation
         X = tf.zeros((0,self.params.num_boids,self.params.dim))
         V = tf.zeros((0,self.params.num_boids,self.params.dim))

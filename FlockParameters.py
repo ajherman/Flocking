@@ -2,6 +2,9 @@
 
 import numpy as np
 
+#############################################
+# Class stores parameters and gets user input
+#############################################
 class Params():
 
     def __init__(self):
@@ -12,11 +15,14 @@ class Params():
         # Prompt user to set some parameters
         pass
 
+#################################
+# Parameters for flock simulation
+#################################
 class SimulationParams(Params):
 
     def __init__(self):
         self.eps = 0.1
-        self.d=0.7 #25
+        self.d=0.7 
         self.r=1.2*self.d
         self.d_a = (np.sqrt(1+self.eps*self.d**2)-1)/self.eps
         self.r_a = (np.sqrt(1+self.eps*self.r**2)-1)/self.eps
@@ -33,7 +39,6 @@ class SimulationParams(Params):
         self.gamma_path = None
 
     def getUserInput(self):
-
         # Get parameters from user
         self.num_boids = input("Enter number of boids: ")
         self.num_iters = input("Enter number of iterations: ")
@@ -41,12 +46,17 @@ class SimulationParams(Params):
         self.num_boids,self.num_iters,self.dim = int(self.num_boids),int(self.num_iters),int(self.dim)
         if self.dim == 2:
             self.gamma_path = input("Select path for gamma agent ['circle','eight']: ")
+        
         elif self.dim == 3:
             self.gamma_path = input("Select path for gamma agent ['circle','wild']: ")
+        
         else:
             print("Invalid dimension")
             assert(False)
 
+##################################
+# Stores parameters for animations
+##################################
 class AnimationParams(Params):
 
     def __init__(self):
@@ -61,6 +71,7 @@ class AnimationParams(Params):
         if self.save=='y':
             self.save = True
             self.fname = input("Type file name [no extension]: ")
+        
         else:
             self.save = False
             self.fname = None

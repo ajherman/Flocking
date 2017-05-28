@@ -6,7 +6,6 @@ Created on Tue May 16 21:46:44 2017
 """
 
 import numpy as np
-from sklearn.preprocessing import normalize
 from numpy.linalg import norm
 from FlockAnimation import ScatterAnimation,QuiverAnimation 
 from FlockParameters import SimulationParams, AnimationParams
