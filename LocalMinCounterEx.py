@@ -14,9 +14,22 @@ from matplotlib import pyplot as plt
 def dist1(X):
     return np.sqrt(np.sum((X[:,0,:]-X[:,1,:])**2,axis=1))
 
-
 def dist2(X):
-    return np.sqrt(np.sum((X[:,2,:]-X[:,1,:])**2,axis=1))
+    return np.sqrt(np.sum((X[:,0,:]-X[:,2,:])**2,axis=1))
+
+def dist3(X):
+    return np.sqrt(np.sum((X[:,0,:]-X[:,3,:])**2,axis=1))
+
+def dist4(X):
+    return np.sqrt(np.sum((X[:,1,:]-X[:,2,:])**2,axis=1))
+
+def dist5(X):
+    return np.sqrt(np.sum((X[:,1,:]-X[:,3,:])**2,axis=1))
+
+def dist6(X):
+    return np.sqrt(np.sum((X[:,2,:]-X[:,3,:])**2,axis=1))
+
+
 
 def potential(X):
     ans = 0
@@ -39,19 +52,29 @@ sim_params.c_p = 0
 sim_params.c_q = 0
 sim_params.num_boids = 4
 sim_params.gamma_path = 'circle'
-sim_params.d = 0.8 #7.0 # 0.8
-sim_params.r =  1.6*sim_params.d
+sim_params.d = 7.0 #5.0
+sim_params.r = 13.0 #10.0 
 sim_params.d_a = (np.sqrt(1+sim_params.eps*sim_params.d**2)-1)/sim_params.eps
 sim_params.r_a = (np.sqrt(1+sim_params.eps*sim_params.r**2)-1)/sim_params.eps
-sim_params.num_iters = 20000
+sim_params.num_iters = 50000
 
-# Init points
-d=1.5
-sim_params.q_init = np.array([[0,0],[0,d*np.sqrt(3)/3],[-d/2,-d*np.sqrt(3)/6],[d/2,-d*np.sqrt(3)/6]])
+################
+# Init positions
+################
+
+## Triangle
+#s=6.4599
+#sim_params.q_init = np.array([[0,0],[0,s*np.sqrt(3)/3],[-s/2,-s*np.sqrt(3)/6],[s/2,-s*np.sqrt(3)/6]])
+
+# Square
+s = 6.2358  #4.3471034
+sim_params.q_init = np.array([[0,0],[0,s],[s,0],[s,s]])
+
+# Init velocities (0)
 sim_params.p_init = np.zeros((sim_params.num_boids,sim_params.dim))
 
 # Add noise
-noise_level=0.000001
+noise_level=1.0
 sim_params.q_init += np.random.normal(0.0,noise_level,size=(sim_params.num_boids,sim_params.dim))
 sim_params.p_init += np.random.normal(0.0,noise_level,size=(sim_params.num_boids,sim_params.dim))
 
@@ -92,10 +115,10 @@ if save_array == 'y':
 ###########
 
 if ani_params.quiver:
-    flock = QuiverAnimation(X[:,:-1,:],V[:,:-1,:],ran=2*d)
+    flock = QuiverAnimation(X[:,:-1,:],V[:,:-1,:],ran=2*s)
     
 else:
-    flock = ScatterAnimation(X[:,:-1,:],ran=2*d)
+    flock = ScatterAnimation(X[:,:-1,:],ran=2*s)
 
 flock.animate(show=ani_params.show,save=ani_params.save,fname=ani_params.fname)
 
@@ -108,13 +131,16 @@ flock.animate(show=ani_params.show,save=ani_params.save,fname=ani_params.fname)
 p=potential(X)
 plt.plot(p)
 plt.show()
-d1=dist1(X)
-plt.plot(d1)
-plt.show()
-d2=dist2(X)
-plt.plot(d2)
-plt.show()
-print(d1)
-print(d2)
-
+print("d1")
+print(dist1(X))
+print("d2")
+print(dist2(X))
+print("d3")
+print(dist3(X))
+print("d4")
+print(dist4(X))
+print("d5")
+print(dist5(X))
+print("d6")
+print(dist6(X))
 #####################################
