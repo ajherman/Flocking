@@ -26,10 +26,10 @@ class Animation():
 #########################
 class ScatterAnimation(Animation):
     def __init__(self,Q,ran=2.):
+        
         assert(isinstance(Q,np.ndarray))
-        
+        self.quiver = False
         self.num_iters,self.num_points,self.dim = np.shape(Q)
-        
         self.range = ran # Max/min value for axes
 
         # Set up figure
@@ -37,7 +37,7 @@ class ScatterAnimation(Animation):
 
         if self.dim == 2:
             self.Q = Q
-
+            
             # Set axes
             self.ax = self.fig.add_axes([0, 0, 1, 1])
             self.ax.set_xlim(-self.range,self.range)
@@ -58,7 +58,10 @@ class ScatterAnimation(Animation):
             self.ax.set_zlim3d([-self.range,self.range])
             
             # Plot init points
-            self.sc = self.ax.scatter(self.Q[0,0],self.Q[0,1],self.Q[0,2],s=5)
+            if self.quiver:
+                self.sc = plt.quiver(self.Q[0,:,0],self.Q[0,:,1],self.P[0,:,0],self.P[0,:,1])
+            else:
+                self.sc = self.ax.scatter(self.Q[0,0],self.Q[0,1],self.Q[0,2],s=5)
 
         else:
             print("Invalid dimension for animation array")

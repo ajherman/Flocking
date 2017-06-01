@@ -22,14 +22,10 @@ sim_params.set_num_boids(550)
 sim_params.set_gamma_path('wild')
 sim_params.set_d(0.7) #7.0 # 0.8
 sim_params.set_r(1.2*sim_params.d)
-#sim_params.d_a = (np.sqrt(1+sim_params.eps*sim_params.d**2)-1)/sim_params.eps
-#sim_params.r_a = (np.sqrt(1+sim_params.eps*sim_params.r**2)-1)/sim_params.eps
 sim_params.set_num_iters(2500)
 
 # Init points
 
-#sim_params.q_init = np.random.normal(0.0,1.0,size=(sim_params.num_boids,sim_params.dim))
-#sim_params.p_init = np.random.normal(0.0,0.1,size=(sim_params.num_boids,sim_params.dim))
 sim_params.set_q_init('random')
 sim_params.set_p_init('random')
 
@@ -38,7 +34,9 @@ sim_params.set_p_init('random')
 ####################################
 
 ani_params = AnimationParams()
-ani_params.getUserInput()
+ani_params.get_show()
+ani_params.get_save()
+ani_params.get_quiver()
 
 ##################
 # Setup simulation
