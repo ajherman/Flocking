@@ -2,6 +2,8 @@
 
 # Displays counter example to lemma 3 from Olfati paper
 
+import sys
+sys.path.insert(0,"../ClassDefinitions")
 import numpy as np
 from FlockParameters import SimulationParams, AnimationParams
 from FlockSimulation import OlfatiFlockingSimulation
@@ -66,17 +68,12 @@ sim_params.num_iters = 50000
 s=6.4599
 sim_params.q_init = np.array([[0,0],[0,s*np.sqrt(3)/3],[-s/2,-s*np.sqrt(3)/6],[s/2,-s*np.sqrt(3)/6]])
 
-# Square
-#s = 6.2358  #4.3471034
-#sim_params.q_init = np.array([[0,0],[0,s],[s,0],[s,s]])
-
 # Init velocities (0)
 sim_params.p_init = np.zeros((sim_params.num_boids,sim_params.dim))
 
 # Add noise
-noise_level=0.0001
+noise_level=0.00001
 sim_params.q_init += np.random.normal(0.0,noise_level,size=(sim_params.num_boids,sim_params.dim))
-sim_params.p_init += np.random.normal(0.0,noise_level,size=(sim_params.num_boids,sim_params.dim))
 
 ####################################
 # Get animation parameters from user
@@ -121,9 +118,6 @@ else:
     flock = ScatterAnimation(X[:,:-1,:],ran=2*s)
 
 flock.animate(show=ani_params.show,save=ani_params.save,fname=ani_params.fname)
-
-
-
 
 # WIP
 ##################################

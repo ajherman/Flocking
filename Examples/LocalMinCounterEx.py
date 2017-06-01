@@ -54,23 +54,18 @@ sim_params.c_p = 0
 sim_params.c_q = 0
 sim_params.num_boids = 4
 sim_params.gamma_path = 'circle'
-sim_params.d = 5.0 #7.0 #5.0
-sim_params.r = 10.0 #13.0 #10.0 
+sim_params.d = 7.0 
+sim_params.r = 13.0 
 sim_params.d_a = (np.sqrt(1+sim_params.eps*sim_params.d**2)-1)/sim_params.eps
 sim_params.r_a = (np.sqrt(1+sim_params.eps*sim_params.r**2)-1)/sim_params.eps
 sim_params.num_iters = 50000
-print(sim_params.r_a)
-print(sim_params.d_a)
+
 ################
 # Init positions
 ################
 
-## Triangle
-#s=6.4599
-#sim_params.q_init = np.array([[0,0],[0,s*np.sqrt(3)/3],[-s/2,-s*np.sqrt(3)/6],[s/2,-s*np.sqrt(3)/6]])
-
 # Square
-s = 4.3471034 #6.2358  #4.3471034
+s = 6.2358  
 sim_params.q_init = np.array([[0,0],[0,s],[s,0],[s,s]])
 
 # Init velocities (0)
@@ -79,7 +74,6 @@ sim_params.p_init = np.zeros((sim_params.num_boids,sim_params.dim))
 # Add noise
 noise_level=1.0
 sim_params.q_init += np.random.normal(0.0,noise_level,size=(sim_params.num_boids,sim_params.dim))
-sim_params.p_init += np.random.normal(0.0,noise_level,size=(sim_params.num_boids,sim_params.dim))
 
 ####################################
 # Get animation parameters from user
