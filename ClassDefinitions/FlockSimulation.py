@@ -123,6 +123,10 @@ class OlfatiFlockingSimulation(FlockingSimulation):
         # Add the gamma agent
         X = np.concatenate((X,self.q_g[:,None,:]),axis=1) 
         V = np.concatenate((V,self.p_g[:,None,:]),axis=1)
+        
+        # Save array
+        if self.params.save:
+            np.save(self.params.fname,[X,V])
 
         return X,V
 
@@ -244,6 +248,10 @@ class OlfatiFlockingSimulationTF(FlockingSimulation):
         resX = sess.run(X)
         resV = sess.run(V)
         sess.close()
+        
+        # Save
+        if self.params.save:
+            np.save(self.params.fname,[resX,resV])
 
         return resX,resV
 

@@ -13,21 +13,13 @@ from FlockSimulation import OlfatiFlockingSimulation, OlfatiFlockingSimulationTF
 # Set simulation parameters
 ###########################
 sim_params = SimulationParams()
-#sim_params.num_boids = 25
-#sim_params.num_iters = 25
 sim_params.set_num_boids(25)
 sim_params.set_num_iters(25)
 
-##########################
-# Set animation parameters
-##########################
-ani_params = AnimationParams()
-ani_params.set_save(False)
-ani_params.set_show(True)
 
-###########
-# Run tests
-###########
+#######
+# Tests
+#######
 
 # Basic
 for run_method in ['NP','TF']:     
@@ -71,17 +63,26 @@ for run_method in ['NP','TF']:
         except:
             print("Fail.")
 
+##########################
+# Set animation parameters
+##########################
+ani_params = AnimationParams()
+ani_params.set_save(False)
+ani_params.set_show(False)
 
 # Test quiver animation
 print("Quiver animation test:  ", end = "")
 
 try:
     flock = ScatterAnimation()
-    flock.quiver = True
+    ani_params.set_save(True)
+    ani_params.set_quiver(True)
+    ani_params.set_fname("Quiver_test")
+    flock.params = ani_params
     flock.setQ(X)
     flock.setP(V)
     flock.initAnimation()
-    flock.animate(show=False,save=True,fname="Quiver_test")
+    flock.animate()
     print("Pass!")
 
 except:
@@ -91,10 +92,13 @@ except:
 print("Scatter animation test:  ", end = "")
 
 try:
-    flock.quiver = False
+    flock.params.quiver = False
+    ani_params.set_save(True)
+    ani_params.set_quiver(False)
+    ani_params.set_fname("Scatter_test")
     flock.setQ(X)
     flock.initAnimation()
-    flock.animate(show=False,save=True,fname="Scatter_test")
+    flock.animate()
     print("Pass!")
 
 except:

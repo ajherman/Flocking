@@ -54,6 +54,7 @@ class ScatterAnimation(Animation):
     def setP(self,P):
         if self.dim == 2:
             self.P = P 
+            self.P = 0.01*self.P/norm(self.P,axis=2,keepdims=True) # Normalize P
         elif self.dim == 3:
             self.P = np.swapaxes(P,1,2) # Necessary to re-order axes for animation
         else:
@@ -121,5 +122,6 @@ class ScatterAnimation(Animation):
     
         if self.params.show:
             plt.show()
+
 
 

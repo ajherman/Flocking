@@ -11,32 +11,32 @@ from FlockSimulation import OlfatiFlockingSimulation, OlfatiFlockingSimulationTF
 
 
 #####################################
-# Get simulation parameters from user
+# Get parameters from user
 #####################################
 
+# Simulation
 sim_params = SimulationParams()
 sim_params.get_num_boids()
 sim_params.get_num_iters()
 sim_params.get_dim()
 sim_params.get_gamma_path()
+sim_params.get_save()
 sim_params.set_q_init('random')
 sim_params.set_p_init('random')
 run_method = input("Do you want to run this simulation with Numpy or Tensorflow? ['NP'/'TF']: ")
 
-
-####################################
-# Get animation parameters from user
-####################################
-
+# Animation
 ani_params = AnimationParams()
 ani_params.get_save()
 ani_params.get_show()
 ani_params.get_quiver()
 
-###########################
-# Setup flocking simulation
-###########################
 
+##################
+# Flock simulation
+##################
+
+# Setup
 if run_method == 'NP':
     flock_sim = OlfatiFlockingSimulation()
 
@@ -47,35 +47,30 @@ else:
     print("Invalid run method.  Must select Numpy or Tensorflow. ['NP'/'TF']")
     assert(False)
 
-# Set simulation parameters
+# Set parameters
 flock_sim.params = sim_params
 
-################
-# Run simulation
-################
-
-# Init simulation
+# Init 
 flock_sim.initSim()
 
-# Run simulation
+# Run 
 X,V = flock_sim.runSim()
 
-# Save simulation array?
-save_array = input("Do you want to save the simulation array? [y/n]: ") != 'n'
-if save_array:
-    np.save(ani_params.fname,[X,V])
 
+#################
+# Flock animation
+#################
 
-
-#########
-# Animate
-#########
-
+# Setup
 flock = ScatterAnimation()
 flock.params = ani_params
 flock.setQ(X)
 flock.setP(V)
+
+# Init
 flock.initAnimation()
+
+# Run
 flock.animate()
 
 
