@@ -10,7 +10,6 @@ from FlockSimulation import OlfatiFlockingSimulation
 from FlockAnimation import ScatterAnimation
 from matplotlib import pyplot as plt
 
-
 def dist(X,i,j):
     return np.sqrt(np.sum((X[:,i,:]-X[:,j,:])**2,axis=1))
 
@@ -23,16 +22,16 @@ sim_params.set_dim(2)
 sim_params.c_p = 0
 sim_params.c_q = 0
 sim_params.set_num_boids(4)
-sim_params.gamma_path = 'circle'
-sim_params.set_d(5.0)
-sim_params.set_r(10.0) 
-sim_params.set_num_iters(1000)
+sim_params.set_gamma_path('circle')
+sim_params.set_d(7.0) 
+sim_params.set_r(13.0)
+sim_params.set_num_iters(500)
 sim_params.get_save()
-# Triangle
-s=6.4599
-noise=0.001
-sim_params.q_init = np.array([[0,0],[0,s*np.sqrt(3)/3],[-s/2,-s*np.sqrt(3)/6],[s/2,-s*np.sqrt(3)/6]]+np.random.normal(0.0,noise,size=(sim_params.num_boids,sim_params.dim)))
-sim_params.p_init = np.zeros((sim_params.num_boids,sim_params.dim))
+s = 6.2358 # Equilibrium side length for square
+noise = 0.1
+# Square with noise
+sim_params.set_q_init(np.array([[0,0],[0,s],[s,0],[s,s]])+np.random.normal(0.0,noise,size=(sim_params.num_boids,sim_params.dim))) 
+sim_params.set_p_init(np.random.normal(0.0,noise,size=(sim_params.num_boids,sim_params.dim)))
 
 ####################################
 # Get animation parameters from user
@@ -40,8 +39,8 @@ sim_params.p_init = np.zeros((sim_params.num_boids,sim_params.dim))
 
 ani_params = AnimationParams()
 ani_params.get_save()
-ani_params.set_show(True)
 ani_params.get_quiver()
+ani_params.set_show(True)
 
 ##################
 # Setup simulation
@@ -67,12 +66,14 @@ X,V = flock_sim.runSim()
 # Animation
 ###########
 
-flock = ScatterAnimation(ran=2*s)
+flock = ScatterAnimation()
 flock.params = ani_params
-flock.setQ(X[:,:-1,:])
-flock.setP(V[:,:-1,:])
+flock.range = 7.
+flock.setQ(X[:,:-1,:]) # Gets rid of
+flock.setP(V[:,:-1,:]) # gamma agent
 flock.initAnimation()
 flock.animate()
+
 
 ################
 # Plot distances

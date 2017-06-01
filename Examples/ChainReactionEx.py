@@ -7,7 +7,7 @@ sys.path.insert(0,"../ClassDefinitions")
 import numpy as np
 from FlockParameters import SimulationParams, AnimationParams
 from FlockSimulation import OlfatiFlockingSimulation
-from FlockAnimation import ScatterAnimation,QuiverAnimation
+from FlockAnimation import ScatterAnimation
 from matplotlib import pyplot as plt
 
 ###########################
@@ -23,9 +23,9 @@ sim_params.set_gamma_path('wild')
 sim_params.set_d(0.7) #7.0 # 0.8
 sim_params.set_r(1.2*sim_params.d)
 sim_params.set_num_iters(2500)
+sim_params.get_save()
 
 # Init points
-
 sim_params.set_q_init('random')
 sim_params.set_p_init('random')
 
@@ -34,7 +34,7 @@ sim_params.set_p_init('random')
 ####################################
 
 ani_params = AnimationParams()
-ani_params.get_show()
+ani_params.set_show(True)
 ani_params.get_save()
 ani_params.get_quiver()
 
@@ -58,21 +58,23 @@ flock_sim.initSim()
 # Run sim
 X,V = flock_sim.runSim()
 
-# Save simulation array
-save_array = input("Do you want to save the simmulation array? [y/n]: ")
-if save_array == 'y':
-    np.save(ani_params.fname,X)
 
 ###########
 # Animation
 ###########
 
-if ani_params.quiver:
-    flock = QuiverAnimation(X[:,:-1,:],V[:,:-1,:])
-    
-else:
-    flock = ScatterAnimation(X[:,:-1,:])
-
-flock.animate(show=ani_params.show,save=ani_params.save,fname=ani_params.fname)
-
-
+flock = ScatterAnimation()
+flock.params = ani_params
+flock.setQ(X)
+flock.setP(V)
+flock.initAnimation()
+flock.animate()
+#if ani_params.quiver:
+#    flock = QuiverAnimation(X[:,:-1,:],V[:,:-1,:])
+#    
+#else:
+#    flock = ScatterAnimation(X[:,:-1,:])
+#
+#flock.animate(show=ani_params.show,save=ani_params.save,fname=ani_params.fname)
+#
+#

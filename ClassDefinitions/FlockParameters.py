@@ -39,6 +39,8 @@ class SimulationParams(Params):
         self.gamma_path = None
         self.q_init = None
         self.p_init = None
+        self.save = False
+        self.fname = None
 
     def set_epsilon(self,eps):
         self.eps = eps
@@ -57,7 +59,7 @@ class SimulationParams(Params):
     # Call only if epsilon is set
     def set_r(self,r):
         self.r = r
-        self_r_a = (np.sqrt(1+self.eps*self.r**2)-1)/self.eps
+        self.r_a = (np.sqrt(1+self.eps*self.r**2)-1)/self.eps
     def get_r(self):
         r = input("Enter a value for r: ")
         self.set_r(float(r))
@@ -95,48 +97,61 @@ class SimulationParams(Params):
     
     # Call only if dim and num_boids are set
     def set_q_init(self,q_init):
-        if q_init == 'random':
+        if q_init is 'random':
             self.q_init = np.random.normal(0.0,1.0,size=(self.num_boids,self.dim))
         else:
             self.q_init = q_init
     def get_q_init(self):
         q_init = input("Enter " + str(self.num_boids) + " positions as a comma-separated list or 'random'")
-        if q_init == 'random':
+        if q_init is 'random':
             self._q_init(q_init)
         else:
             self.set_q_init(np.array(q_init))
 
     # Call only if dim and num_boids are set
     def set_p_init(self,p_init):
-        if p_init == 'random':
+        if p_init is 'random':
             self.p_init = np.random.normal(0.0,0.1,size=(self.num_boids,self.dim))
         else:
             self.p_init = p_init
     def get_p_init(self):
         p_init = input("Enter " + str(self.num_boids) + " velocities as a comma-separated list or 'random'")
-        if p_init == 'random':
+        if p_init is 'random':
             self.set_p_init(p_init)
         else:
             self.set_p_init(np.array(p_init))
-    
-    def getUserInput(self):
-        # Get parameters from user
-        self.num_boids = input("Enter number of boids: ")
-        self.num_iters = input("Enter number of iterations: ")
-        self.dim = input("Enter number of dimensions [2/3]: ")
-        self.num_boids,self.num_iters,self.dim = int(self.num_boids),int(self.num_iters),int(self.dim)
-        if self.dim == 2:
-            self.gamma_path = input("Select path for gamma agent ['circle','eight']: ")
-        
-        elif self.dim == 3:
-            self.gamma_path = input("Select path for gamma agent ['circle','wild']: ")
-        
+   
+    def set_save(self,save):
+        self.save = save
+    def get_save(self):
+        want_to_save = input("Do you want to save the simulation arrays? [y/n]: ")
+        if want_to_save != 'n':
+            self.set_save(True)
+            fname = input("Enter file name with path [path/fname]: ")
+            self.set_fname(fname)
         else:
-            print("Invalid dimension")
-            assert(False)
+            self.set_save(False)
 
-        self.q_init = np.random.normal(0.0,1.0,size=(self.num_boids,self.dim))
-        self.p_init = np.random.normal(0.0,0.1,size=(self.num_boids,self.dim))
+    def set_fname(self,fname):
+        self.fname = fname
+#    def getUserInput(self):
+#        # Get parameters from user
+#        self.num_boids = input("Enter number of boids: ")
+#        self.num_iters = input("Enter number of iterations: ")
+#        self.dim = input("Enter number of dimensions [2/3]: ")
+#        self.num_boids,self.num_iters,self.dim = int(self.num_boids),int(self.num_iters),int(self.dim)
+#        if self.dim == 2:
+#            self.gamma_path = input("Select path for gamma agent ['circle','eight']: ")
+#        
+#        elif self.dim == 3:
+#            self.gamma_path = input("Select path for gamma agent ['circle','wild']: ")
+#        
+#        else:
+#            print("Invalid dimension")
+#            assert(False)
+#
+#        self.q_init = np.random.normal(0.0,1.0,size=(self.num_boids,self.dim))
+#        self.p_init = np.random.normal(0.0,0.1,size=(self.num_boids,self.dim))
 
 ##################################
 # Stores parameters for animations
@@ -160,11 +175,16 @@ class AnimationParams(Params):
 
     def set_save(self,save):
         self.save = save
+    
+    def set_fname(self,fname):
+        self.fname = fname
+
     def get_save(self):
         want_to_save = input("Do you want to save this animation? [y/n]: ")
         if want_to_save != 'n':
             self.set_save(True)
-            self.fname = input("Enter file name [path/filename]: ")
+            fname = input("Enter file name [path/filename]: ")
+            self.set_fname(fname)
         else:
             self.set_save(False)
     
