@@ -40,6 +40,85 @@ class SimulationParams(Params):
         self.q_init = None
         self.p_init = None
 
+    def set_epsilon(self,eps):
+        self.eps = eps
+    def get_epsilon(self):
+        eps = input("Enter a value for epsilon: ")
+        self.set_epsilon(float(eps))
+
+    # Call only if epsilon is set
+    def set_d(self,d):
+        self.d = d
+        self.d_a = (np.sqrt(1+self.eps*self.d**2)-1)/self.eps
+    def get_d(self):
+        d = input("Enter a value for d: ")
+        self.set_d(float(d))
+
+    # Call only if epsilon is set
+    def set_r(self,r):
+        self.r = r
+        self_r_a = (np.sqrt(1+self.eps*self.r**2)-1)/self.eps
+    def get_r(self):
+        r = input("Enter a value for r: ")
+        self.set_r(float(r))
+
+    def set_dim(self,dim):
+        self.dim = dim
+    def get_dim(self):
+        dim = input("Enter number of dimensions [2/3]: ")
+        self.set_dim(int(dim))
+
+    # Call only if dim is set
+    def set_gamma_path(self,gamma_path):
+        self.gamma_path = gamma_path
+    def get_gamma_path(self):
+        if self.dim == 2:
+            gamma_path = input("Select path for gamma agent ['circle','eight']: ")
+        elif self.dim == 3:
+            gamma_path = input("Select path for gamma agent ['circle','wild']: ")
+        else:
+            print("Invalid dimension")
+            assert(False)
+        self.set_gamma_path(gamma_path)
+
+    def set_num_iters(self,num_iters):
+        self.num_iters = num_iters
+    def get_num_iters(self):
+        num_iters = input("Enter number of interations: ")
+        self.set_num_iters(int(num_iters))
+
+    def set_num_boids(self,num_boids):
+        self.num_boids = num_boids
+    def get_num_boids(self):
+        num_boids = input("Enter number of boids: ")
+        self.set_num_boids(int(num_boids))
+    
+    # Call only if dim and num_boids are set
+    def set_q_init(self,q_init):
+        if q_init == 'random':
+            self.q_init = np.random.normal(0.0,1.0,size=(self.num_boids,self.dim))
+        else:
+            self.q_init = q_init
+    def get_q_init(self):
+        q_init = input("Enter " + str(self.num_boids) + " positions as a comma-separated list or 'random'")
+        if q_init == 'random':
+            self._q_init(q_init)
+        else:
+            self.set_q_init(np.array(q_init))
+
+    # Call only if dim and num_boids are set
+    def set_p_init(self,p_init):
+        if p_init == 'random':
+            self.p_init = np.random.normal(0.0,0.1,size=(self.num_boids,self.dim))
+        else:
+            self.p_init = p_init
+    def get_p_init(self):
+        p_init = input("Enter " + str(self.num_boids) + " velocities as a comma-separated list or 'random'")
+        if p_init == 'random':
+            self.set_p_init(p_init)
+        else:
+            self.set_p_init(np.array(p_init))
+    
     def getUserInput(self):
         # Get parameters from user
         self.num_boids = input("Enter number of boids: ")
@@ -69,6 +148,25 @@ class AnimationParams(Params):
         self.save = False
         self.fname = None
         self.quiver = False
+
+    def set_show(self,show):
+        self.show = show
+    def get_show(self):
+        want_to_show = input("Do you want to show this animation? [y/n]: ")
+        if want_to_save != 'n':
+            self.set_show(True)
+        else:
+            self.set_show(False)
+
+    def set_save(self,save):
+        self.save = save
+    def get_save(self):
+        want_to_save = input("Do you want to save this animation? [y/n]: ")
+        if want_to_save != 'n':
+            self.set_save(True)
+            self.fname = input("Enter file name [path/filename]: ")
+        else:
+            self.set_save(False)
 
     def getUserInput(self):
         self.save = input("Do you want to save this animation [y/n]: ")

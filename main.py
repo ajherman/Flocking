@@ -15,7 +15,13 @@ from FlockSimulation import OlfatiFlockingSimulation, OlfatiFlockingSimulationTF
 #####################################
 
 sim_params = SimulationParams()
-sim_params.getUserInput()
+#sim_params.getUserInput()
+sim_params.get_num_boids()
+sim_params.get_num_iters()
+sim_params.get_dim()
+sim_params.get_gamma_path()
+sim_params.set_q_init('random')
+sim_params.set_p_init('random')
 run_method = input("Do you want to run this simulation with Numpy or Tensorflow? ['NP'/'TF']: ")
 
 

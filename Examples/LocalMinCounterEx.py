@@ -13,25 +13,8 @@ from matplotlib import pyplot as plt
 # WIP
 #############################################################
 
-def dist1(X):
-    return np.sqrt(np.sum((X[:,0,:]-X[:,1,:])**2,axis=1))
-
-def dist2(X):
-    return np.sqrt(np.sum((X[:,0,:]-X[:,2,:])**2,axis=1))
-
-def dist3(X):
-    return np.sqrt(np.sum((X[:,0,:]-X[:,3,:])**2,axis=1))
-
-def dist4(X):
-    return np.sqrt(np.sum((X[:,1,:]-X[:,2,:])**2,axis=1))
-
-def dist5(X):
-    return np.sqrt(np.sum((X[:,1,:]-X[:,3,:])**2,axis=1))
-
-def dist6(X):
-    return np.sqrt(np.sum((X[:,2,:]-X[:,3,:])**2,axis=1))
-
-
+def dist(X,i,j):
+    return np.sqrt(np.sum((X[:,i,:]-X[:,j,:])**2,axis=1))
 
 def potential(X):
     ans = 0
@@ -58,14 +41,14 @@ sim_params.d = 7.0
 sim_params.r = 13.0 
 sim_params.d_a = (np.sqrt(1+sim_params.eps*sim_params.d**2)-1)/sim_params.eps
 sim_params.r_a = (np.sqrt(1+sim_params.eps*sim_params.r**2)-1)/sim_params.eps
-sim_params.num_iters = 50000
+sim_params.num_iters = 1000
 
 ################
 # Init positions
 ################
 
 # Square
-s = 6.2358  
+s = 6.2358 # Equilibrium side length for square
 sim_params.q_init = np.array([[0,0],[0,s],[s,0],[s,s]])
 
 # Init velocities (0)
@@ -120,24 +103,14 @@ else:
 flock.animate(show=ani_params.show,save=ani_params.save,fname=ani_params.fname)
 
 
-
-
-# WIP
-##################################
-# Graphing potential and stuff 
-p=potential(X)
-plt.plot(p)
+################
+# Plot distances
+################
+plt.plot(dist(X,0,1))
+plt.plot(dist(X,0,2))
+plt.plot(dist(X,0,3))
+plt.plot(dist(X,1,2))
+plt.plot(dist(X,1,3))
+plt.plot(dist(X,2,3))
 plt.show()
-print("d1")
-print(dist1(X))
-print("d2")
-print(dist2(X))
-print("d3")
-print(dist3(X))
-print("d4")
-print(dist4(X))
-print("d5")
-print(dist5(X))
-print("d6")
-print(dist6(X))
-#####################################
+

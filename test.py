@@ -13,8 +13,10 @@ from FlockSimulation import OlfatiFlockingSimulation, OlfatiFlockingSimulationTF
 # Set simulation parameters
 ###########################
 sim_params = SimulationParams()
-sim_params.num_boids = 25
-sim_params.num_iters = 25
+#sim_params.num_boids = 25
+#sim_params.num_iters = 25
+sim_params.set_num_boids(25)
+sim_params.set_num_iters(25)
 
 ##########################
 # Set animation parameters
@@ -44,14 +46,14 @@ for run_method in ['NP','TF']:
                 assert("Invalid dimension given in test program")
                 
             # Set dimension
-            sim_params.dim = dim
+            sim_params.set_dim(dim)
 
             # Set gamma path
-            sim_params.gamma_path = 'circle'
+            sim_params.set_gamma_path('circle')
             
             # Init points
-            sim_params.q_init = np.random.normal(0.0,1.0,size=(sim_params.num_boids,sim_params.dim))
-            sim_params.p_init = np.random.normal(0.0,0.1,size=(sim_params.num_boids,sim_params.dim))
+            sim_params.set_q_init('random')
+            sim_params.set_p_init('random')
             
             # Set simulation parameters
             flock_sim.params = sim_params
