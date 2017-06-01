@@ -5,7 +5,7 @@
 import sys
 sys.path.insert(0,"ClassDefinitions")
 import numpy as np
-from FlockAnimation import ScatterAnimation,QuiverAnimation 
+from FlockAnimation import ScatterAnimation
 from FlockParameters import SimulationParams, AnimationParams
 from FlockSimulation import OlfatiFlockingSimulation, OlfatiFlockingSimulationTF
 
@@ -50,7 +50,6 @@ else:
 # Set simulation parameters
 flock_sim.params = sim_params
 
-
 ################
 # Run simulation
 ################
@@ -67,21 +66,16 @@ if save_array:
     np.save(ani_params.fname,[X,V])
 
 
+
 #########
 # Animate
 #########
 
-if ani_params.quiver:
-    flock = QuiverAnimation(X,V)
-    flock.setQ(X)
-    flock.setP(V)
-    flock.initAnimation()
-    flock.animate(show=ani_params.show,save=ani_params.save,fname=ani_params.fname)
-
-else:
-    flock = ScatterAnimation(X)
-    flock.setP(X)
-    flock.initAnimation()
-    flock.animate(show=ani_params.show,save=ani_params.save,fname=ani_params.fname)
+flock = ScatterAnimation()
+flock.params = ani_params
+flock.setQ(X)
+flock.setP(V)
+flock.initAnimation()
+flock.animate()
 
 

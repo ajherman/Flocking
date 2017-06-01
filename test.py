@@ -5,7 +5,7 @@
 import sys
 sys.path.insert(0,"ClassDefinitions")
 import numpy as np
-from FlockAnimation import ScatterAnimation,QuiverAnimation 
+from FlockAnimation import ScatterAnimation 
 from FlockParameters import SimulationParams, AnimationParams
 from FlockSimulation import OlfatiFlockingSimulation, OlfatiFlockingSimulationTF
 
@@ -76,7 +76,8 @@ for run_method in ['NP','TF']:
 print("Quiver animation test:  ", end = "")
 
 try:
-    flock = QuiverAnimation(X,V)
+    flock = ScatterAnimation()
+    flock.quiver = True
     flock.setQ(X)
     flock.setP(V)
     flock.initAnimation()
@@ -90,7 +91,7 @@ except:
 print("Scatter animation test:  ", end = "")
 
 try:
-    flock = ScatterAnimation(X)
+    flock.quiver = False
     flock.setQ(X)
     flock.initAnimation()
     flock.animate(show=False,save=True,fname="Scatter_test")
