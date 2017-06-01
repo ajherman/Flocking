@@ -77,6 +77,9 @@ print("Quiver animation test:  ", end = "")
 
 try:
     flock = QuiverAnimation(X,V)
+    flock.setQ(X)
+    flock.setP(V)
+    flock.initAnimation()
     flock.animate(show=False,save=True,fname="Quiver_test")
     print("Pass!")
 
@@ -88,6 +91,8 @@ print("Scatter animation test:  ", end = "")
 
 try:
     flock = ScatterAnimation(X)
+    flock.setQ(X)
+    flock.initAnimation()
     flock.animate(show=False,save=True,fname="Scatter_test")
     print("Pass!")
 

@@ -73,10 +73,15 @@ if save_array:
 
 if ani_params.quiver:
     flock = QuiverAnimation(X,V)
+    flock.setQ(X)
+    flock.setP(V)
+    flock.initAnimation()
     flock.animate(show=ani_params.show,save=ani_params.save,fname=ani_params.fname)
 
 else:
     flock = ScatterAnimation(X)
+    flock.setP(X)
+    flock.initAnimation()
     flock.animate(show=ani_params.show,save=ani_params.save,fname=ani_params.fname)
 
 

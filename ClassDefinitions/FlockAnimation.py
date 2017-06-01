@@ -29,15 +29,75 @@ class ScatterAnimation(Animation):
         
         assert(isinstance(Q,np.ndarray))
         self.quiver = False
-        self.num_iters,self.num_points,self.dim = np.shape(Q)
+#        self.num_iters,self.num_points,self.dim = np.shape(Q)
         self.range = ran # Max/min value for axes
+        self.Q = None
+        self.num_iters = None
+        self.num_points = None
+        self.dim = None
+        self.P = None
+        self.ax = None
+        self.sc = None
 
         # Set up figure
         self.fig = plt.figure()
 
+#        if self.dim == 2:
+##            self.Q = Q
+#            
+#            # Set axes
+#            self.ax = self.fig.add_axes([0, 0, 1, 1])
+#            self.ax.set_xlim(-self.range,self.range)
+#            self.ax.set_xticks([])
+#            self.ax.set_ylim(-self.range,self.range)
+#            self.ax.set_yticks([])
+#
+#            # Plot init points
+#            if self.quiver:
+#                self.sc = plt.quiver(self.Q[0,:,0],self.Q[0,:,1],self.P[0,:,0],self.P[0,:,1])
+#            else:
+#                self.sc = plt.scatter(self.Q[0,:,0],self.Q[0,:,1],s=5)
+#
+#        elif self.dim == 3:
+##            self.Q = np.swapaxes(Q,1,2) # Necessary re-ordering of axes
+#
+#            # Set axes
+#            self.ax = self.fig.add_subplot(111, projection='3d')
+#            self.ax.set_xlim3d([-self.range,self.range])
+#            self.ax.set_ylim3d([-self.range,self.range])
+#            self.ax.set_zlim3d([-self.range,self.range])
+#            
+#            # Plot init points
+#            if self.quiver:
+#                self.sc = self.ax.quiver(self.Q[0,0],self.Q[0,1],self.Q[0,2],self.P[0,0],self.P[0,1],self.P[0,2],length=0.2,lw=1)
+#            else:
+#                self.sc = self.ax.scatter(self.Q[0,0],self.Q[0,1],self.Q[0,2],s=5)
+#
+#        else:
+#            print("Invalid dimension for animation array")
+#            assert(False)
+
+    def setQ(self,Q):
+        self.num_iters,self.num_points,self.dim = np.shape(Q)
         if self.dim == 2:
-            self.Q = Q
-            
+            self.Q = Q 
+        elif self.dim == 3:
+            self.Q = np.swapaxes(Q,1,2) # Necessary to re-order axes for animation
+        else:
+            print("Invalid dimension for animation array")
+            assert(False)
+
+    def setP(self,P):
+        if self.dim == 2:
+            self.P = P 
+        elif self.dim == 3:
+            self.P = np.swapaxes(P,1,2) # Necessary to re-order axes for animation
+        else:
+            print("Invalid dimension for animation array")
+            assert(False)
+
+    def initAnimation(self):
+        if self.dim == 2:
             # Set axes
             self.ax = self.fig.add_axes([0, 0, 1, 1])
             self.ax.set_xlim(-self.range,self.range)
@@ -46,11 +106,11 @@ class ScatterAnimation(Animation):
             self.ax.set_yticks([])
 
             # Plot init points
-            self.sc = plt.scatter(self.Q[0,:,0],self.Q[0,:,1],s=5)
-
-        elif self.dim == 3:
-            self.Q = np.swapaxes(Q,1,2) # Necessary re-ordering of axes
-
+            if self.quiver:
+                self.sc = plt.quiver(self.Q[0,:,0],self.Q[0,:,1],self.P[0,:,0],self.P[0,:,1])
+            else:
+                self.sc = plt.scatter(self.Q[0,:,0],self.Q[0,:,1],s=5)
+        elif self.dim == 3: 
             # Set axes
             self.ax = self.fig.add_subplot(111, projection='3d')
             self.ax.set_xlim3d([-self.range,self.range])
@@ -59,20 +119,31 @@ class ScatterAnimation(Animation):
             
             # Plot init points
             if self.quiver:
-                self.sc = plt.quiver(self.Q[0,:,0],self.Q[0,:,1],self.P[0,:,0],self.P[0,:,1])
+                self.sc = self.ax.quiver(self.Q[0,0],self.Q[0,1],self.Q[0,2],self.P[0,0],self.P[0,1],self.P[0,2],length=0.2,lw=1)
             else:
                 self.sc = self.ax.scatter(self.Q[0,0],self.Q[0,1],self.Q[0,2],s=5)
-
         else:
             print("Invalid dimension for animation array")
             assert(False)
-
+  
     def update(self,num): # Update function for matplotlib funcAnimation
         if self.dim == 2:
-            self.sc.set_offsets(self.Q[num])
+            if self.quiver: 
+                self.sc.set_offsets(self.Q[num])
+                self.sc.set_UVC(self.P[num,:,0],self.P[num,:,1])
+            else:
+                self.sc.set_offsets(self.Q[num])
         
         elif self.dim == 3:
-            self.sc._offsets3d = self.Q[num]
+            if self.quiver: 
+                # Necessary to reset axes each frame due to issue with quiver when in 3D (has not set_data methods)
+                self.ax.clear()
+                self.ax.set_xlim3d([-2,2])
+                self.ax.set_ylim3d([-2,2])
+                self.ax.set_zlim3d([-2,2])
+                self.ax.quiver(self.Q[num,0],self.Q[num,1],self.Q[num,2],self.P[num,0],self.P[num,1],self.P[num,2],length=0.2,lw=1)
+            else:
+                self.sc._offsets3d = self.Q[num]
         
         else:
             print("Invalid dimension for animation array")
