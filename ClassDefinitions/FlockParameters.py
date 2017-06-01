@@ -153,7 +153,7 @@ class AnimationParams(Params):
         self.show = show
     def get_show(self):
         want_to_show = input("Do you want to show this animation? [y/n]: ")
-        if want_to_save != 'n':
+        if want_to_show != 'n':
             self.set_show(True)
         else:
             self.set_show(False)
@@ -167,6 +167,18 @@ class AnimationParams(Params):
             self.fname = input("Enter file name [path/filename]: ")
         else:
             self.set_save(False)
+    
+    def set_quiver(self,quiver):
+        self.quiver = quiver
+    def get_quiver(self):
+        use_quiver = input("Do you want to make a vector animation? [y/n]: ")
+        if use_quiver == 'y':
+            self.set_quiver(True)
+        elif use_quiver == 'n':
+            self.set_quiver(False)
+        else:
+            print("Invalid option")
+            assert(False)
 
     def getUserInput(self):
         self.save = input("Do you want to save this animation [y/n]: ")

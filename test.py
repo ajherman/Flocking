@@ -22,9 +22,8 @@ sim_params.set_num_iters(25)
 # Set animation parameters
 ##########################
 ani_params = AnimationParams()
-ani_params.save = False
-ani_params.show = False
-ani_params.fname = None
+ani_params.set_save(False)
+ani_params.set_show(True)
 
 ###########
 # Run tests

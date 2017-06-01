@@ -15,7 +15,6 @@ from FlockSimulation import OlfatiFlockingSimulation, OlfatiFlockingSimulationTF
 #####################################
 
 sim_params = SimulationParams()
-#sim_params.getUserInput()
 sim_params.get_num_boids()
 sim_params.get_num_iters()
 sim_params.get_dim()
@@ -30,8 +29,9 @@ run_method = input("Do you want to run this simulation with Numpy or Tensorflow?
 ####################################
 
 ani_params = AnimationParams()
-ani_params.getUserInput()
-
+ani_params.get_save()
+ani_params.get_show()
+ani_params.get_quiver()
 
 ###########################
 # Setup flocking simulation
