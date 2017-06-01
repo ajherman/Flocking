@@ -2,6 +2,8 @@
 
 # Runs tests on the other files.  Make sure this passes before merging to dev or master!
 
+import sys
+sys.path.insert(0,"ClassDefinitions")
 import numpy as np
 from FlockAnimation import ScatterAnimation,QuiverAnimation 
 from FlockParameters import SimulationParams, AnimationParams

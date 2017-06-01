@@ -2,6 +2,8 @@
 
 # Displays counter example to lemma 3 from Olfati paper
 
+import sys
+sys.path.insert(0,"../ClassDefinitions")
 import numpy as np
 from FlockParameters import SimulationParams, AnimationParams
 from FlockSimulation import OlfatiFlockingSimulation

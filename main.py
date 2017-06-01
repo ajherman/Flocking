@@ -2,6 +2,8 @@
 
 # Prompts user for input and runs flocking simulation using Algorithm 2 from Olfati paper
 
+import sys
+sys.path.insert(0,"ClassDefinitions")
 import numpy as np
 from FlockAnimation import ScatterAnimation,QuiverAnimation 
 from FlockParameters import SimulationParams, AnimationParams
@@ -56,7 +58,7 @@ X,V = flock_sim.runSim()
 # Save simulation array?
 save_array = input("Do you want to save the simulation array? [y/n]: ") != 'n'
 if save_array:
-    np.save(ani_params.fname,X)
+    np.save(ani_params.fname,[X,V])
 
 
 #########
