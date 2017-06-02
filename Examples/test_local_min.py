@@ -47,6 +47,9 @@ sim_params.set_save(False)
 s = 6.2358 # Equilibrium side length for square
 noise = 1.0
 
+# Our counter example (stable square)
+q_init = np.array([[0,0],[0,s],[s,0],[s,s]])
+
 # Make simulation object
 flock_sim = OlfatiFlockingSimulation()
 
@@ -55,9 +58,8 @@ flock_sim = OlfatiFlockingSimulation()
 # Test
 ######
 
-for i in range(10000): # Test random perturbations
-    q_init = np.array([[0,0],[0,s],[s,0],[s,s]])
-    pert = np.random.normal(0.0,noise,size=(sim_params.num_boids,sim_params.dim))
+for i in range(1000000): # Test random perturbations
+    pert = 2*np.random.rand(sim_params.num_boids,sim_params.dim)-1
     # Square with noise
     sim_params.set_q_init(q_init+pert) 
     sim_params.set_p_init(np.random.normal(0.0,noise,size=(sim_params.num_boids,sim_params.dim)))
@@ -73,10 +75,10 @@ for i in range(10000): # Test random perturbations
  
     diff = np.sqrt(np.sum((get_dist_vect(X)-square_dist_vect))**2)
     
-    if diff > 0.001:
+    if diff > 0.0005:
         print("Fail")
         print(diff)
         print(X[0])
 
-    if i%200 == 0:
+    if i%1000 == 0:
         print("Iteration "+str(i)+": Pass")
