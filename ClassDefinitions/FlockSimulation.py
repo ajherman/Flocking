@@ -1,6 +1,7 @@
 # Authors: Ari Herman & Taiyo Terada
 
 import numpy as np
+from numpy.linalg import norm
 import tensorflow as tf
 
 ####################################
@@ -53,10 +54,17 @@ class OlfatiFlockingSimulation(FlockingSimulation):
 
     def phi_b(self,z):
         return self.rho_h(z/self.params.r_b)*(sig_1(z-self.params.d_b)-1)
-
-
-                
+    
 #########################################################################################################################
+
+    def diffp(self,q,p):
+        diffs = self.differences(self.params.beta_pos,q)
+        diffs = diffs/norm(diffs,axis=2,keepdims=True)
+        proj_len =  np.sum(diffs*p[None,:,:],axis=2,keepdims=True)      
+        proj = proj_len*diffs
+        return proj
+
+        
 
     def differences(self,q,b=None): # Returns array of pairwise differences 
         if b is None:
