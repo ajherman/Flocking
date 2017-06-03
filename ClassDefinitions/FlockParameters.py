@@ -22,8 +22,10 @@ class SimulationParams(Params):
 
     def __init__(self):
         self.eps = 0.1
-        self.d=0.7 
+        self.d=0.7
+        self.d_p=0.6*self.d# d'
         self.r=1.2*self.d
+        self.r_p=1.2*self.d# r'
         self.d_a = (np.sqrt(1+self.eps*self.d**2)-1)/self.eps
         self.r_a = (np.sqrt(1+self.eps*self.r**2)-1)/self.eps
         self.a=5
@@ -31,9 +33,15 @@ class SimulationParams(Params):
         self.c=.5*np.abs(self.a-self.b)/np.sqrt(self.a*self.b)
         self.h=.2 #0<h<1
         self.dt=0.01
-        self.c_q=10
+        self.c_qa=1
+        self.c_pa=1
+        self.c_q=0#gamma without beta agent
+        self.c_qs=10#gamma with beta agent
         self.c_p=5
+        self.c_qb=1
+        self.c_pb=1
         self.num_boids = None
+        self.num_betas = 3
         self.num_iters = None
         self.dim = None
         self.gamma_path = None
@@ -55,6 +63,14 @@ class SimulationParams(Params):
     def get_d(self):
         d = input("Enter a value for d: ")
         self.set_d(float(d))
+    
+    # Call only if epsilon is set
+    def set_d(self,d):#defines d' for beta agents
+        self.d = d
+        self.d_b = (np.sqrt(1+self.eps*self.d**2)-1)/self.eps
+    def get_d(self):
+        d = input("Enter a value for d' for beta agents: ")
+        self.set_d(float(d))
 
     # Call only if epsilon is set
     def set_r(self,r):
@@ -63,9 +79,18 @@ class SimulationParams(Params):
     def get_r(self):
         r = input("Enter a value for r: ")
         self.set_r(float(r))
+        
+    # Call only if epsilon is set
+    def set_r(self,r):#defines r' for beta agents
+        self.r = r
+        self.r_b = (np.sqrt(1+self.eps*self.r**2)-1)/self.eps
+    def get_r(self):
+        r = input("Enter a value for r' for beta agents: ")
+        self.set_r(float(r))
 
     def set_dim(self,dim):
         self.dim = dim
+        self.beta_pos=np.random.rand(self.num_betas,self.dim)
     def get_dim(self):
         dim = input("Enter number of dimensions [2/3]: ")
         self.set_dim(int(dim))
