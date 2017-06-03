@@ -109,7 +109,6 @@ class OlfatiFlockingSimulation(FlockingSimulation):
     
     def gUpdate(self,q,p,i):
         return -self.params.c_qs*self.sig_1(self.differences(self.q_g[i:i+1],q))[0] - self.params.c_p*(p-self.p_g[i])
-#        return -self.params.c_qs*self.sig_1(q-self.q_g[i]) - self.params.c_p*(p-p_g[i])
 
     def makeGamma(self): # Generates/sets trajectory for gamma agent
         if self.params.dim == 2:
