@@ -86,7 +86,22 @@ class OlfatiFlockingSimulation(FlockingSimulation):
         norms = self.sig_norm(diff)
         diffp=self.differences(p)
         return self.params.c_qa*np.sum(self.phi_a(norms)*self.sig_grad(diff,norms),axis=0)+self.params.c_pa*np.sum(self.rho_h(norms/self.params.r_a)*diffp,axis=0)
-
+    
+    def bUpdate(self,q,p):
+        dqbeta=self.differences(self.params.beta_pos,q)
+        diffqbeta=dqbeta-self.r_p*normalize(dqbeta)
+        normqbeta=self.sig_norm(diffqbeta)
+        nhatbeta=self.sig_grad(diffqbeta,normqbeta)
+        rhoqbeta=self.rho_h(normqbeta/self.d_b)
+        
+        diffs = self.differences(self.params.beta_pos,q)
+        diffs = diffs/norm(diffs,axis=2,keepdims=True)
+        proj_len =  np.sum(diffs*p[None,:,:],axis=2,keepdims=True)      
+        proj = proj_len*diffs
+        
+        return self.params.c_qb*np.sum(self.phi_b(normqbeta)*nhatbeta,axis=0)+self.params.c_pb*np.sum(rhoqbeta*proj,axis=0)
+        
+    
     def differentiate(self,v): # Differentiates vector
         dv = v.copy()
         dv[1:]-=v[:-1]
