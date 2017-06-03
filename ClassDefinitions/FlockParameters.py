@@ -22,24 +22,34 @@ class SimulationParams(Params):
 
     def __init__(self):
         self.eps = 0.1
+
+        # alpha-alpha parameters
         self.d=0.7
-        self.d_p=0.6*self.d# d'
         self.r=1.2*self.d
-        self.r_p=1.2*self.d# r'
         self.d_a = (np.sqrt(1+self.eps*self.d**2)-1)/self.eps
-        self.r_a = (np.sqrt(1+self.eps*self.r**2)-1)/self.eps
+        self.r_a = (np.sqrt(1+self.eps*self.r**2)-1)/self.eps 
+        
+        # alpha-beta parameters
+        self.d_p=0.6*self.d# d'
+        self.r_p=1.2*self.d_p # r' Note: Taiyo, I changed this from self.r_p = 1.2*self.d
+        self.d_b = (np.sqrt(1+self.eps*self.d_p**2)-1)/self.eps
+        self.r_b = (np.sqrt(1+self.eps*self.r_p**2)-1)/self.eps 
+        self.c_qb=1
+        self.c_pb=1
+
+        # alpha-gamma parameters 
+        self.c_qa=1
+        self.c_pa=1
+        self.c_p=5
+        self.c_q=0#gamma without beta agent
+        self.c_qs=10#gamma with beta agent
+
+        # Other parameters
         self.a=5
         self.b=5
         self.c=.5*np.abs(self.a-self.b)/np.sqrt(self.a*self.b)
         self.h=.2 #0<h<1
         self.dt=0.01
-        self.c_qa=1
-        self.c_pa=1
-        self.c_q=0#gamma without beta agent
-        self.c_qs=10#gamma with beta agent
-        self.c_p=5
-        self.c_qb=1
-        self.c_pb=1
         self.num_boids = None
         self.num_betas = 5
         self.beta_pos=None
