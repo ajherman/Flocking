@@ -41,7 +41,8 @@ class SimulationParams(Params):
         self.c_qb=1
         self.c_pb=1
         self.num_boids = None
-        self.num_betas = 3
+        self.num_betas = 5
+        self.beta_pos=None
         self.num_iters = None
         self.dim = None
         self.gamma_path = None
@@ -65,12 +66,12 @@ class SimulationParams(Params):
         self.set_d(float(d))
     
     # Call only if epsilon is set
-    def set_d(self,d):#defines d' for beta agents
-        self.d = d
-        self.d_b = (np.sqrt(1+self.eps*self.d**2)-1)/self.eps
-    def get_d(self):
-        d = input("Enter a value for d' for beta agents: ")
-        self.set_d(float(d))
+    def set_d_p(self,d_p):#defines d' for beta agents
+        self.d_p = d_p
+        self.d_b = (np.sqrt(1+self.eps*self.d_p**2)-1)/self.eps
+    def get_d_p(self):
+        d_p = input("Enter a value for d' for beta agents: ")
+        self.set_d_p(float(d_p))
 
     # Call only if epsilon is set
     def set_r(self,r):
@@ -81,12 +82,12 @@ class SimulationParams(Params):
         self.set_r(float(r))
         
     # Call only if epsilon is set
-    def set_r(self,r):#defines r' for beta agents
-        self.r = r
-        self.r_b = (np.sqrt(1+self.eps*self.r**2)-1)/self.eps
-    def get_r(self):
-        r = input("Enter a value for r' for beta agents: ")
-        self.set_r(float(r))
+    def set_r_p(self,r_p):#defines r' for beta agents
+        self.r_p = r_p
+        self.r_b = (np.sqrt(1+self.eps*self.r_p**2)-1)/self.eps
+    def get_r_p(self):
+        r_p = input("Enter a value for r' for beta agents: ")
+        self.set_r_p(float(r_p))
 
     def set_dim(self,dim):
         self.dim = dim

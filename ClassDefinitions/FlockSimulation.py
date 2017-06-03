@@ -2,6 +2,7 @@
 
 import numpy as np
 import tensorflow as tf
+from numpy.linalg import norm
 
 ####################################
 # Class for running flock simulation
@@ -63,6 +64,18 @@ class OlfatiFlockingSimulation(FlockingSimulation):
             return q[:,None,:] - q
         else:
             return q[:,None,:]-b
+    
+    def normalize(self,Z):
+        return Z/norm(Z,axis=2,keepdims=True)
+    
+    def qbetadifferences(self,q):
+        dqbeta=self.differences(self.beta_pos,q)
+        diffqbeta=self.dqbeta-self.r_p*normalize(dqbeta)
+        normqbeta=self.sig_norm(diffqbeta)/self.d_b
+        rhoqbeta=self.rho_h(normqbeta)
+        nhatbeta=self.sig_grad(diffqbeta,normqbeta)
+        return
+    
 
     def uUpdate(self,q,p):
         diff=self.differences(q)
