@@ -27,8 +27,10 @@ class SimulationParams(Params):
         self.d=0.7
         self.r=1.2*self.d
         self.d_a = (np.sqrt(1+self.eps*self.d**2)-1)/self.eps
-        self.r_a = (np.sqrt(1+self.eps*self.r**2)-1)/self.eps 
-        
+        self.r_a = (np.sqrt(1+self.eps*self.r**2)-1)/self.eps  
+        self.c_qa=1
+        self.c_pa=1
+
         # alpha-beta parameters
         self.d_p=0.6*self.d# d'
         self.r_p=1.2*self.d_p # r' Note: Taiyo, I changed this from self.r_p = 1.2*self.d
@@ -38,11 +40,9 @@ class SimulationParams(Params):
         self.c_pb=1
 
         # alpha-gamma parameters 
-        self.c_qa=1
-        self.c_pa=1
         self.c_p=5
-        self.c_q=0#gamma without beta agent
-        self.c_qs=10#gamma with beta agent
+        self.c_q=10 # 0 gamma without beta agent
+        self.c_qs=30 #gamma with beta agent
 
         # Other parameters
         self.a=5
