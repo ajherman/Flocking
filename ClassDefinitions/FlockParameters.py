@@ -170,24 +170,6 @@ class SimulationParams(Params):
 
     def set_fname(self,fname):
         self.fname = fname
-#    def getUserInput(self):
-#        # Get parameters from user
-#        self.num_boids = input("Enter number of boids: ")
-#        self.num_iters = input("Enter number of iterations: ")
-#        self.dim = input("Enter number of dimensions [2/3]: ")
-#        self.num_boids,self.num_iters,self.dim = int(self.num_boids),int(self.num_iters),int(self.dim)
-#        if self.dim == 2:
-#            self.gamma_path = input("Select path for gamma agent ['circle','eight']: ")
-#        
-#        elif self.dim == 3:
-#            self.gamma_path = input("Select path for gamma agent ['circle','wild']: ")
-#        
-#        else:
-#            print("Invalid dimension")
-#            assert(False)
-#
-#        self.q_init = np.random.normal(0.0,1.0,size=(self.num_boids,self.dim))
-#        self.p_init = np.random.normal(0.0,0.1,size=(self.num_boids,self.dim))
 
 ##################################
 # Stores parameters for animations
