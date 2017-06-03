@@ -165,7 +165,7 @@ class OlfatiFlockingSimulation(FlockingSimulation):
                 z=self.uUpdate(self.q,self.p)
                 self.q+=self.p*self.params.dt
 #                self.p+=(z + self.bUpdate(self.q,self.p) + self.gUpdate(self.q,self.p,i))*self.params.dt 
-                self.p+=(z + self.bUpdate(self.q,self.p) -self.params.c_q*(self.q-self.q_g[i])-self.params.c_p*(self.p-self.p_g[i]))*self.params.dt
+                self.p+=(z -self.params.c_q*(self.q-self.q_g[i])-self.params.c_p*(self.p-self.p_g[i]))*self.params.dt
                 X[i,:,:] = self.q
                 V[i,:,:] = self.p
         else:
