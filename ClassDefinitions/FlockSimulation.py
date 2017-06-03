@@ -47,17 +47,28 @@ class OlfatiFlockingSimulation(FlockingSimulation):
 
     def phi_a(self,z):
         return self.rho_h(z/self.params.r_a)*self.phi(z-self.params.d_a)
+    
+    def sig_1(self,z): # sigma_1     
+        return (np.sqrt(1+np.sum(z**2,axis=2).reshape((self.params.num_boids,self.params.num_boids,1)))-1)
 
+    def phi_b(self,z):
+        return self.rho_h(z/self.params.r_b)*(sig_1(z-self.params.d_b)-1)
+
+
+                
 #########################################################################################################################
 
-    def differences(self,q): # Returns array of pairwise differences 
-        return q[:,None,:] - q
+    def differences(self,q,b=None): # Returns array of pairwise differences 
+        if b is None:
+            return q[:,None,:] - q
+        else:
+            return q[:,None,:]-b
 
     def uUpdate(self,q,p):
         diff=self.differences(q)
         norms = self.sig_norm(diff)
         diffp=self.differences(p)
-        return np.sum(self.phi_a(norms)*self.sig_grad(diff,norms),axis=0)+np.sum(self.rho_h(norms/self.params.r_a)*diffp,axis=0)
+        return self.params.c_qa*np.sum(self.phi_a(norms)*self.sig_grad(diff,norms),axis=0)+self.params.c_pa*np.sum(self.rho_h(norms/self.params.r_a)*diffp,axis=0)
 
     def differentiate(self,v): # Differentiates vector
         dv = v.copy()
