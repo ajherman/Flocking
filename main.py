@@ -54,7 +54,7 @@ flock_sim.params = sim_params
 flock_sim.initSim()
 
 # Run 
-X,V = flock_sim.runSim()
+X,V = flock_sim.runSim(beta=True)
 
 
 #################

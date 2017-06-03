@@ -53,7 +53,7 @@ class OlfatiFlockingSimulation(FlockingSimulation):
         return (np.sqrt(1+np.sum(z**2,axis=2).reshape((self.params.num_boids,self.params.num_boids,1)))-1)
 
     def phi_b(self,z):
-        return self.rho_h(z/self.params.r_b)*(sig_1(z-self.params.d_b)-1)
+        return self.rho_h(z/self.params.r_b)*(self.sig_1(z-self.params.d_b)-1)
     
 #########################################################################################################################
 
@@ -91,6 +91,9 @@ class OlfatiFlockingSimulation(FlockingSimulation):
         dv = v.copy()
         dv[1:]-=v[:-1]
         return dv/self.params.dt
+    
+    def gUpdate(self,q,p,i):
+        return -self.params.c_qs*self.sig_1(q-self.q_g[i]) - self.params.c_p*(p-p_g[i])
 
     def makeGamma(self): # Generates/sets trajectory for gamma agent
         if self.params.dim == 2:
@@ -138,15 +141,25 @@ class OlfatiFlockingSimulation(FlockingSimulation):
         # Init gamma agent
         self.makeGamma()        
 
-    def runSim(self): # Runs simulation and returns pos, vel data arrays
-        X = np.zeros((self.params.num_iters,self.params.num_boids,self.params.dim))
-        V = np.zeros((self.params.num_iters,self.params.num_boids,self.params.dim))
-        for i in range(self.params.num_iters):
-            z=self.uUpdate(self.q,self.p)
-            self.q+=self.p*self.params.dt
-            self.p+=(z-self.params.c_q*(self.q-self.q_g[i])-self.params.c_p*(self.p-self.p_g[i]))*self.params.dt
-            X[i,:,:] = self.q
-            V[i,:,:] = self.p
+    def runSim(self,beta=False): # Runs simulation and returns pos, vel data arrays
+        if beta:
+            X = np.zeros((self.params.num_iters,self.params.num_boids,self.params.dim))
+            V = np.zeros((self.params.num_iters,self.params.num_boids,self.params.dim))
+            for i in range(self.params.num_iters):
+                z=self.uUpdate(self.q,self.p)
+                self.q+=self.p*self.params.dt
+                self.p+=(z-self.params.c_q*(self.q-self.q_g[i])-self.params.c_p*(self.p-self.p_g[i]))*self.params.dt + 0 + self.gUpdate(self.q,self.p,i) 
+                X[i,:,:] = self.q
+                V[i,:,:] = self.p
+        else:
+            X = np.zeros((self.params.num_iters,self.params.num_boids,self.params.dim))
+            V = np.zeros((self.params.num_iters,self.params.num_boids,self.params.dim))
+            for i in range(self.params.num_iters):
+                z=self.uUpdate(self.q,self.p)
+                self.q+=self.p*self.params.dt
+                self.p+=(z-self.params.c_q*(self.q-self.q_g[i])-self.params.c_p*(self.p-self.p_g[i]))*self.params.dt
+                X[i,:,:] = self.q
+                V[i,:,:] = self.p
 
         # Add the gamma agent
         X = np.concatenate((X,self.q_g[:,None,:]),axis=1) 
