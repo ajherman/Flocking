@@ -137,25 +137,31 @@ class SimulationParams(Params):
             self.q_init = np.random.normal(0.0,1.0,size=(self.num_boids,self.dim))
         else:
             self.q_init = q_init
-    def get_q_init(self):
-        q_init = input("Enter " + str(self.num_boids) + " positions as a comma-separated list or 'random'")
-        if q_init is 'random':
-            self._q_init(q_init)
+    def get_q_init(self): 
+        random = input("Initialize positions randomly? [y/n]: ")
+        if random == 'y':
+            self.set_q_init('random')
         else:
-            self.set_q_init(np.array(q_init))
+            q_init = [None for i in range(self.num_boids)]
+            for boid in range(self.num_boids):
+                q_init[boid] = np.fromstring(input("Enter " + str(self.num_boids) + " position for boid " + str(boid) +" as a comma-separated list or 'random'"), dtype="float", sep=",")
+            self.set_q_init(np.stack(q_init))
 
     # Call only if dim and num_boids are set
     def set_p_init(self,p_init):
         if p_init is 'random':
-            self.p_init = np.random.normal(0.0,0.1,size=(self.num_boids,self.dim))
+            self.p_init = np.random.normal(0.0,1.0,size=(self.num_boids,self.dim))
         else:
             self.p_init = p_init
-    def get_p_init(self):
-        p_init = input("Enter " + str(self.num_boids) + " velocities as a comma-separated list or 'random'")
-        if p_init is 'random':
-            self.set_p_init(p_init)
+    def get_p_init(self): 
+        random = input("Initialize velocitiess randomly? [y/n]: ")
+        if random == 'y':
+            self.set_p_init('random')
         else:
-            self.set_p_init(np.array(p_init))
+            p_init = [None for i in range(self.num_boids)]
+            for boid in range(self.num_boids):
+                p_init[boid] = np.fromstring(input("Enter " + str(self.num_boids) + " velocity for boid " + str(boid) +" as a comma-separated list or 'random'"), dtype="float", sep=",")
+            self.set_p_init(np.stack(p_init))
    
     def set_save(self,save):
         self.save = save
