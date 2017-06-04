@@ -53,7 +53,6 @@ q_init = np.array([[0,0],[0,s],[s,0],[s,s]])
 # Make simulation object
 flock_sim = OlfatiFlockingSimulation()
 
-
 ######
 # Test
 ######
@@ -82,3 +81,7 @@ for i in range(1000000): # Test random perturbations
 
     if i%1000 == 0:
         print("Iteration "+str(i)+": Pass")
+
+
+
+
