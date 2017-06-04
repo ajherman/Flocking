@@ -50,7 +50,7 @@ class OlfatiFlockingSimulation(FlockingSimulation):
         return self.rho_h(z/self.params.r_a)*self.phi(z-self.params.d_a)
     
     def sig_1(self,z): # sigma_1    
-        return np.sqrt(1+np.sum(z**2,axis=2,keepdims=True)-1)
+        return np.sqrt(1+np.sum(z**2,axis=2,keepdims=True))-1
 
     def phi_b(self,z):
         return self.rho_h(z/self.params.r_b)*(self.sig_1(z-self.params.d_b)-1)

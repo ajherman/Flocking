@@ -13,6 +13,7 @@ if input("Do you want to run the beta agent version? [y/n]: ") == 'y':
     beta = True
 else:
     beta = False
+
 #####################################
 # Get parameters from user
 #####################################
