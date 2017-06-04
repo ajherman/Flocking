@@ -118,7 +118,7 @@ class ScatterAnimation(Animation):
         ani = matplotlib.animation.FuncAnimation(self.fig,self.update,frames=range(self.num_iters),interval=20)
         
         if self.params.save:
-            ani.save(self.params.fname+".mp4",fps=20)
+            ani.save(self.params.fname+".mp4",fps=self.params.fps)
     
         if self.params.show:
             plt.show()

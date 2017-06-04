@@ -187,6 +187,7 @@ class AnimationParams(Params):
         self.save = False
         self.fname = None
         self.quiver = False
+        self.fps = 20
 
     def set_show(self,show):
         self.show = show
@@ -224,21 +225,8 @@ class AnimationParams(Params):
             print("Invalid option")
             assert(False)
 
-    def getUserInput(self):
-        self.save = input("Do you want to save this animation [y/n]: ")
-
-        if self.save=='y':
-            self.save = True
-            self.fname = input("Type file name [no extension]: ")
-        
-        else:
-            self.save = False
-            self.fname = None
-
-        display = input("Do you want to show this animation [y/n]: ")
-        if display == 'y':
-            self.show = True
-            quiver_display = input("Do you want a quiver animation [y/n]: ")
-            if quiver_display == 'y':
-                self.quiver = True
-
+    def set_fps(self,fps):
+        self.fps = fps
+    def get_fps(self):
+        fps = input("Enter number of frames per second: ")
+        self.set_fps(int(fps))

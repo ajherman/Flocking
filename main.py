@@ -24,10 +24,8 @@ sim_params.get_num_iters()
 sim_params.get_dim()
 sim_params.get_gamma_path()
 sim_params.get_save()
-#sim_params.set_q_init('random')
-#sim_params.set_p_init('random')
-sim_params.get_q_init()
-sim_params.get_p_init()
+sim_params.set_q_init('random')
+sim_params.set_p_init('random')
 run_method = input("Do you want to run this simulation with Numpy or Tensorflow? ['NP'/'TF']: ")
 
 # Animation
@@ -35,6 +33,7 @@ ani_params = AnimationParams()
 ani_params.get_save()
 ani_params.get_show()
 ani_params.get_quiver()
+#ani_params.get_fps()
 
 
 ##################

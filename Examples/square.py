@@ -86,5 +86,5 @@ plt.plot(dist(X,1,3))
 plt.plot(dist(X,2,3))
 plt.show()
 
-print(dist(X,0,1)[-1])
+#print(dist(X,0,1)[-1])
 
