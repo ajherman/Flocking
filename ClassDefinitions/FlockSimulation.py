@@ -32,7 +32,7 @@ class OlfatiFlockingSimulation(FlockingSimulation):
 #########################################################################################################################
     
     def sig_norm(self,z): # Sigma norm
-        return np.sqrt(1+self.params.eps*np.sum(z**2,axis=2,keepdims=True)-1)/self.params.eps
+        return (np.sqrt(1+self.params.eps*np.sum(z**2,axis=2,keepdims=True))-1)/self.params.eps
          
     def sig_grad(self,z,norm=None): # Gradient of sigma norm
         if type(norm) == "NoneType":
