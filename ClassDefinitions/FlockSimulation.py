@@ -51,9 +51,12 @@ class OlfatiFlockingSimulation(FlockingSimulation):
     
     def sig_1(self,z): # sigma_1    
         return np.sqrt(1+np.sum(z**2,axis=2,keepdims=True))-1
+ 
+    def sig_grad_1(self,z): # Gradient of sigma norm
+        return z/(1+self.sig_1(z))
 
     def phi_b(self,z):
-        return self.rho_h(z/self.params.r_b)*(self.sig_1(z-self.params.d_b)-1)
+        return self.rho_h(z/self.params.r_b)*(self.sig_grad_1(z-self.params.d_b)-1)
     
 #########################################################################################################################
 
@@ -107,8 +110,8 @@ class OlfatiFlockingSimulation(FlockingSimulation):
         dv[1:]-=v[:-1]
         return dv/self.params.dt
     
-    def gUpdate(self,q,p,i):
-        return -self.params.c_qs*self.sig_1(self.differences(self.q_g[i:i+1],q))[0] - self.params.c_p*(p-self.p_g[i])
+    def gUpdate(self,q,p,i):  # The commented line is the one from the paper
+        return -self.params.c_qs*self.sig_grad_1(self.differences(q,self.q_g[i:i+1]))[0] - self.params.c_p*(p-self.p_g[i])
 
     def makeGamma(self): # Generates/sets trajectory for gamma agent
         if self.params.dim == 2:

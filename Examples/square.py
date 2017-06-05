@@ -30,7 +30,7 @@ sim_params.get_save()
 s = 6.2358 # Equilibrium side length for square
 noise = 0.1
 # Square with noise
-sim_params.set_q_init(np.array([[0,0],[0,s],[s,0],[s,s]])+np.random.normal(0.0,noise,size=(sim_params.num_boids,sim_params.dim))) 
+sim_params.set_q_init(np.array([[0,0],[0,s],[s,0],[s,s]])+(np.random.rand(4,2)-0.5)) 
 sim_params.set_p_init(np.random.normal(0.0,noise,size=(sim_params.num_boids,sim_params.dim)))
 
 ####################################
