@@ -29,20 +29,20 @@ class SimulationParams(Params):
         self.d_a = (np.sqrt(1+self.eps*self.d**2)-1)/self.eps
         self.r_a = (np.sqrt(1+self.eps*self.r**2)-1)/self.eps  
         self.c_qa=1
-        self.c_pa=1
+        self.c_pa=.7
 
         # alpha-beta parameters
         self.d_p=0.6*self.d# d'
-        self.r_p=1.2*self.d_p # r' Note: Taiyo, I changed this from self.r_p = 1.2*self.d
+        self.r_p=3*self.d_p # r' Note: Taiyo, I changed this from self.r_p = 1.2*self.d
         self.d_b = (np.sqrt(1+self.eps*self.d_p**2)-1)/self.eps
         self.r_b = (np.sqrt(1+self.eps*self.r_p**2)-1)/self.eps 
-        self.c_qb=3.5 # Originally set to 1
-        self.c_pb=3.5 # Originally set to 1
+        self.c_qb=15 # Originally set to 1
+        self.c_pb=20 # Originally set to 1
 
         # alpha-gamma parameters 
         self.c_p=5
-        self.c_q=10 # 0 gamma without beta agent
-        self.c_qs=20 #gamma with beta agent
+        self.c_q=3 # 0 gamma without beta agent
+        self.c_qs=3 #gamma with beta agent
 
         # Other parameters
         self.a=5
@@ -51,7 +51,7 @@ class SimulationParams(Params):
         self.h=.2 #0<h<1
         self.dt=0.01
         self.num_boids = None
-        self.num_betas = 5
+        self.num_betas = 1
         self.beta_pos=None
         self.num_iters = None
         self.dim = None
@@ -101,7 +101,8 @@ class SimulationParams(Params):
 
     def set_dim(self,dim):
         self.dim = dim
-        self.beta_pos=np.random.rand(self.num_betas,self.dim)
+        #self.beta_pos=np.random.rand(self.num_betas,self.dim)#for random beta agents
+        self.beta_pos=np.zeros((self.num_betas,self.dim))#for beta agent at 0rigin, you will probably want to set num_boids to 1 in this case.
     def get_dim(self):
         dim = input("Enter number of dimensions [2/3]: ")
         self.set_dim(int(dim))
