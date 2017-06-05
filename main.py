@@ -9,6 +9,10 @@ from FlockAnimation import ScatterAnimation
 from FlockParameters import SimulationParams, AnimationParams
 from FlockSimulation import OlfatiFlockingSimulation, OlfatiFlockingSimulationTF
 
+if input("Do you want to run the beta agent version? [y/n]: ") == 'y':
+    beta = True
+else:
+    beta = False
 
 #####################################
 # Get parameters from user
@@ -30,6 +34,7 @@ ani_params = AnimationParams()
 ani_params.get_save()
 ani_params.get_show()
 ani_params.get_quiver()
+#ani_params.get_fps()
 
 
 ##################
@@ -54,7 +59,7 @@ flock_sim.params = sim_params
 flock_sim.initSim()
 
 # Run 
-X,V = flock_sim.runSim()
+X,V = flock_sim.runSim(beta=beta)
 
 
 #################
