@@ -25,7 +25,7 @@ class Animation():
 # Scatter plot animations
 #########################
 class ScatterAnimation(Animation):
-    def __init__(self,ran=2.):
+    def __init__(self,ran=4.):
         
 #        self.quiver = False
         self.range = ran # Max/min value for axes
