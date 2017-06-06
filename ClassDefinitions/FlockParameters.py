@@ -22,18 +22,37 @@ class SimulationParams(Params):
 
     def __init__(self):
         self.eps = 0.1
-        self.d=0.7 
+
+        # alpha-alpha parameters
+        self.d=0.7
         self.r=1.2*self.d
         self.d_a = (np.sqrt(1+self.eps*self.d**2)-1)/self.eps
-        self.r_a = (np.sqrt(1+self.eps*self.r**2)-1)/self.eps
+        self.r_a = (np.sqrt(1+self.eps*self.r**2)-1)/self.eps  
+        self.c_qa=1
+        self.c_pa=.7
+
+        # alpha-beta parameters
+        self.d_p=0.6*self.d# d'
+        self.r_p=3*self.d_p # r' Note: Taiyo, I changed this from self.r_p = 1.2*self.d
+        self.d_b = (np.sqrt(1+self.eps*self.d_p**2)-1)/self.eps
+        self.r_b = (np.sqrt(1+self.eps*self.r_p**2)-1)/self.eps 
+        self.c_qb=15 # Originally set to 1
+        self.c_pb=20 # Originally set to 1
+
+        # alpha-gamma parameters 
+        self.c_p=5
+        self.c_q=3 # 0 gamma without beta agent
+        self.c_qs=3 #gamma with beta agent
+
+        # Other parameters
         self.a=5
         self.b=5
         self.c=.5*np.abs(self.a-self.b)/np.sqrt(self.a*self.b)
         self.h=.2 #0<h<1
         self.dt=0.01
-        self.c_q=10
-        self.c_p=5
         self.num_boids = None
+        self.num_betas = 1
+        self.beta_pos=None
         self.num_iters = None
         self.dim = None
         self.gamma_path = None
@@ -55,6 +74,14 @@ class SimulationParams(Params):
     def get_d(self):
         d = input("Enter a value for d: ")
         self.set_d(float(d))
+    
+    # Call only if epsilon is set
+    def set_d_p(self,d_p):#defines d' for beta agents
+        self.d_p = d_p
+        self.d_b = (np.sqrt(1+self.eps*self.d_p**2)-1)/self.eps
+    def get_d_p(self):
+        d_p = input("Enter a value for d' for beta agents: ")
+        self.set_d_p(float(d_p))
 
     # Call only if epsilon is set
     def set_r(self,r):
@@ -63,9 +90,19 @@ class SimulationParams(Params):
     def get_r(self):
         r = input("Enter a value for r: ")
         self.set_r(float(r))
+        
+    # Call only if epsilon is set
+    def set_r_p(self,r_p):#defines r' for beta agents
+        self.r_p = r_p
+        self.r_b = (np.sqrt(1+self.eps*self.r_p**2)-1)/self.eps
+    def get_r_p(self):
+        r_p = input("Enter a value for r' for beta agents: ")
+        self.set_r_p(float(r_p))
 
     def set_dim(self,dim):
         self.dim = dim
+        #self.beta_pos=np.random.rand(self.num_betas,self.dim)#for random beta agents
+        self.beta_pos=np.zeros((self.num_betas,self.dim))#for beta agent at 0rigin, you will probably want to set num_boids to 1 in this case.
     def get_dim(self):
         dim = input("Enter number of dimensions [2/3]: ")
         self.set_dim(int(dim))
@@ -101,25 +138,31 @@ class SimulationParams(Params):
             self.q_init = np.random.normal(0.0,1.0,size=(self.num_boids,self.dim))
         else:
             self.q_init = q_init
-    def get_q_init(self):
-        q_init = input("Enter " + str(self.num_boids) + " positions as a comma-separated list or 'random'")
-        if q_init is 'random':
-            self._q_init(q_init)
+    def get_q_init(self): 
+        random = input("Initialize positions randomly? [y/n]: ")
+        if random == 'y':
+            self.set_q_init('random')
         else:
-            self.set_q_init(np.array(q_init))
+            q_init = [None for i in range(self.num_boids)]
+            for boid in range(self.num_boids):
+                q_init[boid] = np.fromstring(input("Enter " + str(self.num_boids) + " position for boid " + str(boid) +" as a comma-separated list or 'random'"), dtype="float", sep=",")
+            self.set_q_init(np.stack(q_init))
 
     # Call only if dim and num_boids are set
     def set_p_init(self,p_init):
         if p_init is 'random':
-            self.p_init = np.random.normal(0.0,0.1,size=(self.num_boids,self.dim))
+            self.p_init = np.random.normal(0.0,1.0,size=(self.num_boids,self.dim))
         else:
             self.p_init = p_init
-    def get_p_init(self):
-        p_init = input("Enter " + str(self.num_boids) + " velocities as a comma-separated list or 'random'")
-        if p_init is 'random':
-            self.set_p_init(p_init)
+    def get_p_init(self): 
+        random = input("Initialize velocitiess randomly? [y/n]: ")
+        if random == 'y':
+            self.set_p_init('random')
         else:
-            self.set_p_init(np.array(p_init))
+            p_init = [None for i in range(self.num_boids)]
+            for boid in range(self.num_boids):
+                p_init[boid] = np.fromstring(input("Enter " + str(self.num_boids) + " velocity for boid " + str(boid) +" as a comma-separated list or 'random'"), dtype="float", sep=",")
+            self.set_p_init(np.stack(p_init))
    
     def set_save(self,save):
         self.save = save
@@ -134,24 +177,6 @@ class SimulationParams(Params):
 
     def set_fname(self,fname):
         self.fname = fname
-#    def getUserInput(self):
-#        # Get parameters from user
-#        self.num_boids = input("Enter number of boids: ")
-#        self.num_iters = input("Enter number of iterations: ")
-#        self.dim = input("Enter number of dimensions [2/3]: ")
-#        self.num_boids,self.num_iters,self.dim = int(self.num_boids),int(self.num_iters),int(self.dim)
-#        if self.dim == 2:
-#            self.gamma_path = input("Select path for gamma agent ['circle','eight']: ")
-#        
-#        elif self.dim == 3:
-#            self.gamma_path = input("Select path for gamma agent ['circle','wild']: ")
-#        
-#        else:
-#            print("Invalid dimension")
-#            assert(False)
-#
-#        self.q_init = np.random.normal(0.0,1.0,size=(self.num_boids,self.dim))
-#        self.p_init = np.random.normal(0.0,0.1,size=(self.num_boids,self.dim))
 
 ##################################
 # Stores parameters for animations
@@ -163,6 +188,7 @@ class AnimationParams(Params):
         self.save = False
         self.fname = None
         self.quiver = False
+        self.fps = 20
 
     def set_show(self,show):
         self.show = show
@@ -200,21 +226,8 @@ class AnimationParams(Params):
             print("Invalid option")
             assert(False)
 
-    def getUserInput(self):
-        self.save = input("Do you want to save this animation [y/n]: ")
-
-        if self.save=='y':
-            self.save = True
-            self.fname = input("Type file name [no extension]: ")
-        
-        else:
-            self.save = False
-            self.fname = None
-
-        display = input("Do you want to show this animation [y/n]: ")
-        if display == 'y':
-            self.show = True
-            quiver_display = input("Do you want a quiver animation [y/n]: ")
-            if quiver_display == 'y':
-                self.quiver = True
-
+    def set_fps(self,fps):
+        self.fps = fps
+    def get_fps(self):
+        fps = input("Enter number of frames per second: ")
+        self.set_fps(int(fps))

@@ -2,6 +2,7 @@
 
 import numpy as np
 import tensorflow as tf
+from numpy.linalg import norm
 
 ####################################
 # Class for running flock simulation
@@ -31,8 +32,8 @@ class OlfatiFlockingSimulation(FlockingSimulation):
 #########################################################################################################################
     
     def sig_norm(self,z): # Sigma norm
-        return (np.sqrt(1+self.params.eps*np.sum(z**2,axis=2).reshape((self.params.num_boids,self.params.num_boids,1)))-1)/self.params.eps
-    
+        return (np.sqrt(1+self.params.eps*np.sum(z**2,axis=2,keepdims=True))-1)/self.params.eps
+         
     def sig_grad(self,z,norm=None): # Gradient of sigma norm
         if type(norm) == "NoneType":
             return z/(1+self.params.eps*self.sig_norm(z))
@@ -47,22 +48,70 @@ class OlfatiFlockingSimulation(FlockingSimulation):
 
     def phi_a(self,z):
         return self.rho_h(z/self.params.r_a)*self.phi(z-self.params.d_a)
+    
+    def sig_1(self,z): # sigma_1    
+        return np.sqrt(1+np.sum(z**2,axis=2,keepdims=True))-1
+ 
+    def sig_grad_1(self,z): # Gradient of sigma norm
+        return z/(1+self.sig_1(z))
 
+    def phi_b(self,z):
+        return self.rho_h(z/self.params.r_b)*(self.sig_grad_1(z-self.params.d_b)-1)
+    
 #########################################################################################################################
 
-    def differences(self,q): # Returns array of pairwise differences 
-        return q[:,None,:] - q
+    def diffp(self,q,p):
+        diffs = self.differences(self.params.beta_pos,q)
+        diffs = diffs/norm(diffs,axis=2,keepdims=True)
+        proj_len =  np.sum(diffs*p[None,:,:],axis=2,keepdims=True)      
+        proj = proj_len*diffs
+        return proj
+
+    def differences(self,q,b=None): # Returns array of pairwise differences 
+        if b is None:
+            return q[:,None,:] - q
+        else:
+            return q[:,None,:]-b
+    
+    def normalize(self,Z):
+        return Z/norm(Z,axis=2,keepdims=True)
+    
+    def qbetadifferences(self,q):
+        dqbeta=self.differences(self.beta_pos,q)
+        diffqbeta=self.dqbeta-self.params.r_p*self.normalize(dqbeta)
+        normqbeta=self.sig_norm(diffqbeta)/self.params.d_b
+        rhoqbeta=self.rho_h(normqbeta)
+        nhatbeta=self.sig_grad(diffqbeta,normqbeta)
+        return 0 
 
     def uUpdate(self,q,p):
         diff=self.differences(q)
         norms = self.sig_norm(diff)
         diffp=self.differences(p)
-        return np.sum(self.phi_a(norms)*self.sig_grad(diff,norms),axis=0)+np.sum(self.rho_h(norms/self.params.r_a)*diffp,axis=0)
-
+        return self.params.c_qa*np.sum(self.phi_a(norms)*self.sig_grad(diff,norms),axis=0)+self.params.c_pa*np.sum(self.rho_h(norms/self.params.r_a)*diffp,axis=0)
+    
+    def bUpdate(self,q,p):
+        dqbeta=self.differences(self.params.beta_pos,q)
+        diffqbeta=dqbeta-self.params.r_p*self.normalize(dqbeta)
+        normqbeta=self.sig_norm(diffqbeta)
+        nhatbeta=self.sig_grad(diffqbeta,normqbeta)
+        rhoqbeta=self.rho_h(normqbeta/self.params.d_b)
+        
+        diffs = self.differences(self.params.beta_pos,q)
+        diffs = diffs/norm(diffs,axis=2,keepdims=True)
+        proj_len =  np.sum(diffs*p[None,:,:],axis=2,keepdims=True)      
+        proj = proj_len*diffs
+        
+        return self.params.c_qb*np.sum(self.phi_b(normqbeta)*nhatbeta,axis=0)+self.params.c_pb*np.sum(rhoqbeta*proj,axis=0)
+        
+    
     def differentiate(self,v): # Differentiates vector
         dv = v.copy()
         dv[1:]-=v[:-1]
         return dv/self.params.dt
+    
+    def gUpdate(self,q,p,i):  # The commented line is the one from the paper
+        return -self.params.c_qs*self.sig_grad_1(self.differences(q,self.q_g[i:i+1]))[0] - self.params.c_p*(p-self.p_g[i])
 
     def makeGamma(self): # Generates/sets trajectory for gamma agent
         if self.params.dim == 2:
@@ -110,15 +159,26 @@ class OlfatiFlockingSimulation(FlockingSimulation):
         # Init gamma agent
         self.makeGamma()        
 
-    def runSim(self): # Runs simulation and returns pos, vel data arrays
-        X = np.zeros((self.params.num_iters,self.params.num_boids,self.params.dim))
-        V = np.zeros((self.params.num_iters,self.params.num_boids,self.params.dim))
-        for i in range(self.params.num_iters):
-            z=self.uUpdate(self.q,self.p)
-            self.q+=self.p*self.params.dt
-            self.p+=(z-self.params.c_q*(self.q-self.q_g[i])-self.params.c_p*(self.p-self.p_g[i]))*self.params.dt
-            X[i,:,:] = self.q
-            V[i,:,:] = self.p
+    def runSim(self,beta=False): # Runs simulation and returns pos, vel data arrays
+        if beta:
+            X = np.zeros((self.params.num_iters,self.params.num_boids,self.params.dim))
+            V = np.zeros((self.params.num_iters,self.params.num_boids,self.params.dim))
+            for i in range(self.params.num_iters):
+                za=self.uUpdate(self.q,self.p)
+                zb=self.bUpdate(self.q,self.p)
+                zg=self.gUpdate(self.q,self.p,i)
+                self.q+=self.p*self.params.dt
+                self.p+=(za -zb + zg)*self.params.dt 
+                X[i,:,:] = self.q
+                V[i,:,:] = self.p
+        else:
+            X = np.zeros((self.params.num_iters,self.params.num_boids,self.params.dim))
+            V = np.zeros((self.params.num_iters,self.params.num_boids,self.params.dim))
+            for i in range(self.params.num_iters):
+                self.q+=self.p*self.params.dt
+                self.p+=(self.uUpdate(self.q,self.p)-self.params.c_q*(self.q-self.q_g[i])-self.params.c_p*(self.p-self.p_g[i]))*self.params.dt
+                X[i,:,:] = self.q
+                V[i,:,:] = self.p
 
         # Add the gamma agent
         X = np.concatenate((X,self.q_g[:,None,:]),axis=1) 
