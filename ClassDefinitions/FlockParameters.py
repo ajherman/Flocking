@@ -112,9 +112,9 @@ class SimulationParams(Params):
         self.gamma_path = gamma_path
     def get_gamma_path(self):
         if self.dim == 2:
-            gamma_path = input("Select path for gamma agent ['circle','eight']: ")
+            gamma_path = input("Select path for gamma agent ['circle','eight','static']: ")
         elif self.dim == 3:
-            gamma_path = input("Select path for gamma agent ['circle','wild']: ")
+            gamma_path = input("Select path for gamma agent ['circle','wild','static']: ")
         else:
             print("Invalid dimension")
             assert(False)
