@@ -112,7 +112,7 @@ class OlfatiFlockingSimulation(FlockingSimulation):
     
     def gUpdate(self,q,p,i):  # The commented line is the one from the paper
         return -self.params.c_qs*self.sig_grad_1(self.differences(q,self.q_g[i:i+1]))[0] - self.params.c_p*(p-self.p_g[i])
-
+ 
     def makeGamma(self): # Generates/sets trajectory for gamma agent
         if self.params.dim == 2:
             if self.params.gamma_path == "circle":
@@ -182,8 +182,9 @@ class OlfatiFlockingSimulation(FlockingSimulation):
             X = np.zeros((self.params.num_iters,self.params.num_boids,self.params.dim))
             V = np.zeros((self.params.num_iters,self.params.num_boids,self.params.dim))
             for i in range(self.params.num_iters):
+                z = self.uUpdate(self.q,self.p)
                 self.q+=self.p*self.params.dt
-                self.p+=(self.uUpdate(self.q,self.p)-self.params.c_q*(self.q-self.q_g[i])-self.params.c_p*(self.p-self.p_g[i]))*self.params.dt
+                self.p+=(z-self.params.c_q*(self.q-self.q_g[i])-self.params.c_p*(self.p-self.p_g[i]))*self.params.dt
                 X[i,:,:] = self.q
                 V[i,:,:] = self.p
 

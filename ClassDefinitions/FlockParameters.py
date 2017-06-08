@@ -29,7 +29,7 @@ class SimulationParams(Params):
         self.d_a = (np.sqrt(1+self.eps*self.d**2)-1)/self.eps
         self.r_a = (np.sqrt(1+self.eps*self.r**2)-1)/self.eps  
         self.c_qa=1
-        self.c_pa=.7
+        self.c_pa= 1 #.7
 
         # alpha-beta parameters
         self.d_p=0.6*self.d# d'
