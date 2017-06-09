@@ -24,7 +24,6 @@ sim_params.set_d(0.7) #7.0 # 0.8
 sim_params.set_r(1.2*sim_params.d)
 sim_params.set_num_iters(2500)
 sim_params.get_save()
-
 # Init points
 sim_params.set_q_init('random')
 sim_params.set_p_init('random')
@@ -69,4 +68,3 @@ flock.setQ(X)
 flock.setP(V)
 flock.initAnimation()
 flock.animate()
-
