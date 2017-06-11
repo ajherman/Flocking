@@ -33,11 +33,14 @@ ani_params.set_save(False)
 ani_params.set_quiver(False)
 
 # Functions
-def sig_norm(z): # Sigma norm
-    return (np.sqrt(1+eps*np.sum(z**2,axis=2,keepdims=True))-1)/eps
-     
-def sig_grad(z): # Gradient of sigma norm
-    return z/(1+eps*sig_norm(z))
+def sig_norm(d): # Sigma norm
+    return (np.sqrt(1+eps*d**2)-1)/eps
+
+def l2_norm(z):
+    return np.sqrt(np.sum(z**2,axis=2,keepdims=True))
+
+def sig_grad(d): # Gradient of sigma norm
+    return d/(np.sqrt(1+eps*d**2))
     
 def rho_h(z):
     return  np.logical_and(z>=0,z<h)+np.logical_and(z<=1,z>=h)*(0.5*(1+np.cos(np.pi*(z-h)/(1-h))))
@@ -48,24 +51,28 @@ def phi_a(z):
 def differences(q): # Returns array of pairwise differences 
     return q[:,None,:]-q
 
-def uUpdate(q,p):
-        diff=differences(q)
-        norms = sig_norm(diff)
-        diffp=differences(p)
-        return np.sum(phi_a(norms)*sig_grad(diff),axis=0) + np.sum(rho_h(norms/r_a)*diffp,axis=0)
-    
-def differentiate(v): # Differentiates vector
-    dv = v.copy()
-    dv[1:]-=v[:-1]
-    return dv/dt
+def f(dist):
+    norm = sig_norm(dist)
+    dq = phi_a(norm)/(1+eps*norm)
+    dp = rho_h(norm/r_a)
+    return dq,dp
 
+def uUpdate(q,p):
+    diff=differences(q)
+    diffp=differences(p)
+    dist = l2_norm(diff)
+    dq,dp = f(dist)
+    return np.sum(diff*dq,axis=0) + np.sum(dp*diffp,axis=0)
+    
 # Gamma agent
-x=np.cos(np.linspace(0,2*np.pi*num_iters/200.,num_iters))
+x=np.cos(np.linspace(0,np.pi*num_iters*dt,num_iters))
 y = np.zeros(num_iters)
 z = np.zeros(num_iters)
-
+dx=-np.pi*np.sin(np.linspace(0,np.pi*num_iters*dt,num_iters))
+dy = np.zeros(num_iters)
+dz = np.zeros(num_iters)
 q_g=np.stack((x,y,y),axis=1)
-p_g=np.stack((differentiate(x),differentiate(y),differentiate(z)),axis=1)
+p_g = np.stack((dx,dy,dz),axis=1)
 
 # Init
 q = np.random.normal(0.0,1.0,size=(num_boids,dim))
