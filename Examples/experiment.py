@@ -20,17 +20,13 @@ d_a = 0.242070103255
 r_a = 0.346786940882
 c_q = 10
 c_p = 5
-num_iters = 200
+num_iters = 800
 dt = 0.01
 num_boids = 600
 
 def sig_norm(z): # Sigma norm
     return (np.sqrt(1+eps*z**2)-1)/eps
      
-#def sig_grad(v): # Gradient of sigma norm
-#    z = np.linalg.norm(v)
-#    return v/(1+eps*sig_norm(z))
-    
 def rho_h(z):
     return  np.logical_and(z>=0,z<h)+np.logical_and(z<=1,z>=h)*(0.5*(1+np.cos(np.pi*(z-h)/(1-h))))
 
