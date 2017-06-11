@@ -1,83 +1,115 @@
-# Stuff
+# Authors: Ari Herman & Taiyo Terada
 
-import numpy as np
+# Displays counter example to lemma 3 from Olfati paper
+
 import sys
 sys.path.insert(0,"../ClassDefinitions")
-from FlockAnimation import *
-from FlockParameters import *
+import numpy as np
+from FlockParameters import SimulationParams, AnimationParams
+from FlockSimulation import OlfatiFlockingSimulation
+from FlockAnimation import ScatterAnimation
+from matplotlib import pyplot as plt
+
+###########################
+# Set simulation parameters
+###########################
+
+params = SimulationParams()
+params.set_dim(3)
+params.c_p = 5
+params.c_q = 10
+params.set_num_boids(550)
+params.set_gamma_path('wild')
+params.set_d(0.7) #7.0 # 0.8
+params.set_r(1.2*params.d)
+params.set_num_iters(2500)
+params.get_save()
+# Init points
+params.set_q_init('random')
+params.set_p_init('random')
+
+####################################
+# Get animation parameters from user
+####################################
 
 ani_params = AnimationParams()
-ani_params.set_save(False)
-ani_params.set_quiver(False)
 ani_params.set_show(True)
-flock = ScatterAnimation()
-flock.params = ani_params
+ani_params.get_save()
+ani_params.get_quiver()
 
-eps = 0.1
-h = 0.2
-
-d_a = 0.242070103255
-r_a = 0.346786940882
-c_q = 10
-c_p = 5
-num_iters = 800
-dt = 0.01
-num_boids = 600
 
 def sig_norm(z): # Sigma norm
-    return (np.sqrt(1+eps*z**2)-1)/eps
+    return (np.sqrt(1+params.eps*np.sum(z**2,axis=2,keepdims=True))-1)/params.eps
      
+def sig_grad(z,norm=None): # Gradient of sigma norm
+    if type(norm) == "NoneType":
+        return z/(1+params.eps*sig_norm(z))
+    else:
+        return z/(1+params.eps*norm)
+    
 def rho_h(z):
-    return  np.logical_and(z>=0,z<h)+np.logical_and(z<=1,z>=h)*(0.5*(1+np.cos(np.pi*(z-h)/(1-h))))
+    return  np.logical_and(z>=0,z<params.h)+np.logical_and(z<=1,z>=params.h)*(0.5*(1+np.cos(np.pi*(z-params.h)/(1-params.h))))
 
 def phi(z):
-    return 5*z/(1+eps*sig_norm(z))
+    return 0.5*((params.a+params.b)*sig_grad(z+params.c,1)+(params.a-params.b))
 
 def phi_a(z):
-    return rho_h(z/r_a)*phi(z-d_a)
+    return rho_h(z/params.r_a)*phi(z-params.d_a)
 
-def f(d):
-    n = sig_norm(d)
-    f_q = phi_a(n)/(1+eps*n)
-    f_p = rho_h(n/r_a)
-    return f_q,f_p
 
-def uUpdate(dq,dp):
-    d = np.linalg.norm(v) 
-    f_q,f_p = f(d)
-    return f_q*dq + f_p*dp
+def differences(q,b=None): # Returns array of pairwise differences 
+    if b is None:
+        return q[:,None,:] - q
+    else:
+        return q[:,None,:]-b
 
+def uUpdate(q,p):
+        diff=differences(q)
+        norms = sig_norm(diff)
+        diffp=differences(p)
+        return params.c_qa*np.sum(phi_a(norms)*sig_grad(diff,norms),axis=0)+params.c_pa*np.sum(rho_h(norms/params.r_a)*diffp,axis=0)
+    
+    
 def differentiate(v): # Differentiates vector
     dv = v.copy()
     dv[1:]-=v[:-1]
-    return dv/dt
-
-x=np.cos(np.linspace(0,2*np.pi*num_iters/200.,num_iters))
-y=np.cos(np.linspace(0,4*np.pi*num_iters/200.,num_iters))
-z=np.sin(np.linspace(0,8*np.pi*num_iters/200.,num_iters))
+    return dv/params.dt
+    
+x=np.cos(np.linspace(0,2*np.pi*params.num_iters/200.,params.num_iters))
+y=np.cos(np.linspace(0,4*np.pi*params.num_iters/200.,params.num_iters))
+z=np.sin(np.linspace(0,8*np.pi*params.num_iters/200.,params.num_iters))
 
 q_g=np.stack((x,y,y),axis=1)
 p_g=np.stack((differentiate(x),differentiate(y),differentiate(z)),axis=1)
 
-A = np.zeros((num_iters,num_boids,3))
+q=params.q_init 
+p=params.p_init 
 
-q = np.random.rand(num_boids,3)
-p = np.random.rand(num_boids,3)
+X = np.zeros((params.num_iters,params.num_boids,params.dim))
+V = np.zeros((params.num_iters,params.num_boids,params.dim))
+for i in range(params.num_iters):
+    z = uUpdate(q,p)
+    q+=p*params.dt
+    p+=(z-params.c_q*(q-q_g[i])-params.c_p*(p-p_g[i]))*params.dt
+    X[i,:,:] = q
+    V[i,:,:] = p
 
- 
+# Add the gamma agent
+X = np.concatenate((X,q_g[:,None,:]),axis=1) 
+V = np.concatenate((V,p_g[:,None,:]),axis=1)
 
-for k in range(num_iters):
-    print("Iteration: "+str(k))
-    A[k] = q
-    for i in range(num_boids):
-        u = -c_q*(q[i]-q_g[k]) - c_p*(p[i]-p_g[k])
-        for j in range(num_boids):
-            dq,dp = q[i]-q[j], p[i]-p[j]
-            u += uUpdate(dq,dp) 
-    q += dt*p
-    p += dt*u
+# Save array
+if params.save:
+    np.save(self.params.fname,[X,V])
 
+###########
+# Animation
+###########
 
-flock.setQ(A)
+flock = ScatterAnimation()
+flock.params = ani_params
+flock.setQ(X)
+flock.setP(V)
 flock.initAnimation()
 flock.animate()
+
