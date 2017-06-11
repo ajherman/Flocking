@@ -14,19 +14,24 @@ from matplotlib import pyplot as plt
 # Set simulation parameters
 ###########################
 
-params = SimulationParams()
-params.set_dim(3)
-params.c_p = 5
-params.c_q = 10
-params.set_num_boids(550)
-params.set_gamma_path('wild')
-params.set_d(0.7) #7.0 # 0.8
-params.set_r(1.2*params.d)
-params.set_num_iters(2500)
-params.get_save()
-# Init points
-params.set_q_init('random')
-params.set_p_init('random')
+a = 5
+b= 5
+c = 0
+r_a = 0.346786940882
+d_a = 0.242070103255
+eps = 0.1
+h = 0.2
+dt = 0.01
+num_iters = 2500
+num_boids = 550
+dim = 3
+c_p = 5
+c_q = 10
+fname = "experiment_array"
+
+q_init = np.random.normal(0.0,1.0,size=(num_boids,dim))
+p_init = np.random.normal(0.0,1.0,size=(num_boids,dim))
+
 
 ####################################
 # Get animation parameters from user
@@ -39,58 +44,58 @@ ani_params.get_quiver()
 
 
 def sig_norm(z): # Sigma norm
-    return (np.sqrt(1+params.eps*np.sum(z**2,axis=2,keepdims=True))-1)/params.eps
+    return (np.sqrt(1+eps*np.sum(z**2,axis=2,keepdims=True))-1)/eps
      
 def sig_grad(z,norm=None): # Gradient of sigma norm
     if type(norm) == "NoneType":
-        return z/(1+params.eps*sig_norm(z))
+        return z/(1+eps*sig_norm(z))
     else:
-        return z/(1+params.eps*norm)
+        return z/(1+eps*norm)
     
 def rho_h(z):
-    return  np.logical_and(z>=0,z<params.h)+np.logical_and(z<=1,z>=params.h)*(0.5*(1+np.cos(np.pi*(z-params.h)/(1-params.h))))
+    return  np.logical_and(z>=0,z<h)+np.logical_and(z<=1,z>=h)*(0.5*(1+np.cos(np.pi*(z-h)/(1-h))))
 
 def phi(z):
-    return 0.5*((params.a+params.b)*sig_grad(z+params.c,1)+(params.a-params.b))
+    return 0.5*((a+b)*sig_grad(z+c,1)+(a-b))
 
 def phi_a(z):
-    return rho_h(z/params.r_a)*phi(z-params.d_a)
+    return rho_h(z/r_a)*phi(z-d_a)
 
 
-def differences(q,b=None): # Returns array of pairwise differences 
-    if b is None:
-        return q[:,None,:] - q
-    else:
-        return q[:,None,:]-b
+def differences(q): # Returns array of pairwise differences 
+    return q[:,None,:]-q
 
 def uUpdate(q,p):
         diff=differences(q)
         norms = sig_norm(diff)
         diffp=differences(p)
-        return params.c_qa*np.sum(phi_a(norms)*sig_grad(diff,norms),axis=0)+params.c_pa*np.sum(rho_h(norms/params.r_a)*diffp,axis=0)
+        return np.sum(phi_a(norms)*sig_grad(diff,norms),axis=0) + np.sum(rho_h(norms/r_a)*diffp,axis=0)
     
     
 def differentiate(v): # Differentiates vector
     dv = v.copy()
     dv[1:]-=v[:-1]
-    return dv/params.dt
-    
-x=np.cos(np.linspace(0,2*np.pi*params.num_iters/200.,params.num_iters))
-y=np.cos(np.linspace(0,4*np.pi*params.num_iters/200.,params.num_iters))
-z=np.sin(np.linspace(0,8*np.pi*params.num_iters/200.,params.num_iters))
+    return dv/dt
+
+# Gamma agent
+x=np.cos(np.linspace(0,2*np.pi*num_iters/200.,num_iters))
+y=np.cos(np.linspace(0,4*np.pi*num_iters/200.,num_iters))
+z=np.sin(np.linspace(0,8*np.pi*num_iters/200.,num_iters))
 
 q_g=np.stack((x,y,y),axis=1)
 p_g=np.stack((differentiate(x),differentiate(y),differentiate(z)),axis=1)
 
-q=params.q_init 
-p=params.p_init 
+# Init
+q=q_init 
+p=p_init 
 
-X = np.zeros((params.num_iters,params.num_boids,params.dim))
-V = np.zeros((params.num_iters,params.num_boids,params.dim))
-for i in range(params.num_iters):
+# Main
+X = np.zeros((num_iters,num_boids,dim))
+V = np.zeros((num_iters,num_boids,dim))
+for i in range(num_iters):
     z = uUpdate(q,p)
-    q+=p*params.dt
-    p+=(z-params.c_q*(q-q_g[i])-params.c_p*(p-p_g[i]))*params.dt
+    q+=p*dt
+    p+=(z-c_q*(q-q_g[i])-c_p*(p-p_g[i]))*dt
     X[i,:,:] = q
     V[i,:,:] = p
 
@@ -98,15 +103,13 @@ for i in range(params.num_iters):
 X = np.concatenate((X,q_g[:,None,:]),axis=1) 
 V = np.concatenate((V,p_g[:,None,:]),axis=1)
 
-# Save array
-if params.save:
-    np.save(self.params.fname,[X,V])
+np.save(fname,[X,V])
 
 ###########
 # Animation
 ###########
 
-flock = ScatterAnimation()
+flock = ScatterAnimation(ran = 2.0)
 flock.params = ani_params
 flock.setQ(X)
 flock.setP(V)
