@@ -29,20 +29,21 @@ class SimulationParams(Params):
         self.d_a = (np.sqrt(1+self.eps*self.d**2)-1)/self.eps
         self.r_a = (np.sqrt(1+self.eps*self.r**2)-1)/self.eps  
         self.c_qa=1
-        self.c_pa=.7
+        self.c_pa=2*np.sqrt(self.c_qa)
 
         # alpha-beta parameters
-        self.d_p=0.6*self.d# d'
-        self.r_p=3*self.d_p # r' Note: Taiyo, I changed this from self.r_p = 1.2*self.d
+        self.d_p=2*self.d# d'
+        self.r_p=1*self.d_p # r' Note: Taiyo, I changed this from self.r_p = 1.2*self.d
         self.d_b = (np.sqrt(1+self.eps*self.d_p**2)-1)/self.eps
         self.r_b = (np.sqrt(1+self.eps*self.r_p**2)-1)/self.eps 
-        self.c_qb=15 # Originally set to 1
-        self.c_pb=20 # Originally set to 1
+        self.c_qb=20 # Originally set to 1
+        self.c_pb=2*np.sqrt(self.c_qb) # Originally set to 1
 
         # alpha-gamma parameters 
-        self.c_p=5
-        self.c_q=3 # 0 gamma without beta agent
-        self.c_qs=3 #gamma with beta agent
+        self.c_q=10 # 0 gamma without beta agent
+        self.c_qs=15 #gamma with beta agent
+        self.c_p=2*np.sqrt(self.c_qs)
+        
 
         # Other parameters
         self.a=5
@@ -51,7 +52,7 @@ class SimulationParams(Params):
         self.h=.2 #0<h<1
         self.dt=0.01
         self.num_boids = None
-        self.num_betas = 1
+        self.num_betas = 4
         self.beta_pos=None
         self.num_iters = None
         self.dim = None
@@ -101,8 +102,12 @@ class SimulationParams(Params):
 
     def set_dim(self,dim):
         self.dim = dim
-        #self.beta_pos=np.random.rand(self.num_betas,self.dim)#for random beta agents
-        self.beta_pos=np.zeros((self.num_betas,self.dim))#for beta agent at 0rigin, you will probably want to set num_boids to 1 in this case.
+        #self.beta_pos=3*np.random.rand(self.num_betas,self.dim)#for random beta agents
+        #self.beta_pos=np.zeros((self.num_betas,self.dim))#for beta agent at 0rigin, you will probably want to set num_boids to 1 in this case.
+        self.beta_pos=np.array([[0,0,-1],
+                                [0,0,-5],
+                                [0,0,4],
+                                [0,3,-2]])
     def get_dim(self):
         dim = input("Enter number of dimensions [2/3]: ")
         self.set_dim(int(dim))
@@ -112,7 +117,7 @@ class SimulationParams(Params):
         self.gamma_path = gamma_path
     def get_gamma_path(self):
         if self.dim == 2:
-            gamma_path = input("Select path for gamma agent ['circle','eight']: ")
+            gamma_path = input("Select path for gamma agent ['circle','eight','fixed','accross']: ")
         elif self.dim == 3:
             gamma_path = input("Select path for gamma agent ['circle','wild']: ")
         else:
@@ -188,7 +193,7 @@ class AnimationParams(Params):
         self.save = False
         self.fname = None
         self.quiver = False
-        self.fps = 20
+        self.fps = 30
 
     def set_show(self,show):
         self.show = show

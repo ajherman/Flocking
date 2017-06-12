@@ -122,6 +122,14 @@ class OlfatiFlockingSimulation(FlockingSimulation):
             elif self.params.gamma_path == "eight":
                 x=np.cos(np.linspace(0,2*np.pi*self.params.num_iters/200.,self.params.num_iters))
                 y=np.sin(np.linspace(0,4*np.pi*self.params.num_iters/200.,self.params.num_iters))
+                
+            elif self.params.gamma_path == "fixed":
+                x=np.zeros((0,self.params.num_iters))                
+                y=np.zeros((0,self.params.num_iters))                
+                
+            elif self.params.gamma_path == "accross":
+                x=np.linspace(-20,20,self.params.num_iters)
+                y=np.zeros((self.params.num_iters,))
             
             else:
                 print("Not a valid gamma agent path for dimension 2")
@@ -141,6 +149,11 @@ class OlfatiFlockingSimulation(FlockingSimulation):
                 y=np.cos(np.linspace(0,4*np.pi*self.params.num_iters/200.,self.params.num_iters))
                 z=np.sin(np.linspace(0,8*np.pi*self.params.num_iters/200.,self.params.num_iters))
 
+            elif self.params.gamma_path == "accross":
+                x=np.zeros((self.params.num_iters,))
+                y=np.linspace(-20,20,self.params.num_iters)
+                z=np.zeros((self.params.num_iters,))
+                
             else:
                 print("Not a valid gamma agent path for dimension 3")
                 assert(False)

@@ -11,7 +11,7 @@ import matplotlib
 # General purpose animation class
 #################################
 class Animation():
-    def __init__(self,ran=2.):
+    def __init__(self,ran=10.):
         self.range = ran
         pass
 
@@ -25,7 +25,7 @@ class Animation():
 # Scatter plot animations
 #########################
 class ScatterAnimation(Animation):
-    def __init__(self,ran=4.):
+    def __init__(self,ran=10.):
         
 #        self.quiver = False
         self.range = ran # Max/min value for axes
@@ -103,9 +103,9 @@ class ScatterAnimation(Animation):
             if self.params.quiver: 
                 # Necessary to reset axes each frame due to issue with quiver when in 3D (has not set_data methods)
                 self.ax.clear()
-                self.ax.set_xlim3d([-2,2])
-                self.ax.set_ylim3d([-2,2])
-                self.ax.set_zlim3d([-2,2])
+                self.ax.set_xlim3d([-self.range,self.range])
+                self.ax.set_ylim3d([-self.range,self.range])
+                self.ax.set_zlim3d([-self.range,self.range])
                 self.ax.quiver(self.Q[num,0],self.Q[num,1],self.Q[num,2],self.P[num,0],self.P[num,1],self.P[num,2],length=0.2,lw=1)
             else:
                 self.sc._offsets3d = self.Q[num]
