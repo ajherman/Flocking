@@ -9,6 +9,7 @@ from FlockParameters import SimulationParams, AnimationParams
 from FlockSimulation import OlfatiFlockingSimulation
 from FlockAnimation import ScatterAnimation
 from matplotlib import pyplot as plt
+from numpy.linalg import norm as l2_norm
 
 # Set simulation parameters
 a = 5
@@ -32,47 +33,46 @@ ani_params.set_show(True)
 ani_params.set_save(False)
 ani_params.set_quiver(False)
 
+###########
 # Functions
-def sig_norm(d): # Sigma norm
+###########
+
+def sig_norm(d):
     return (np.sqrt(1+eps*d**2)-1)/eps
 
-def l2_norm(z):
-    return np.sqrt(np.sum(z**2,axis=2,keepdims=True))
-
-def sig_grad(d): # Gradient of sigma norm
+def sig_grad(d): 
     return d/(np.sqrt(1+eps*d**2))
     
-def rho_h(z):
-    return  np.logical_and(z>=0,z<h)+np.logical_and(z<=1,z>=h)*(0.5*(1+np.cos(np.pi*(z-h)/(1-h))))
+def rho_h(d):
+    return  np.logical_and(d>=0,d<h)+np.logical_and(d<=1,d>=h)*(0.5*(1+np.cos(np.pi*(d-h)/(1-h))))
 
-def phi_a(z):
-    return 0.5*rho_h(z/r_a)*((a+b)*sig_grad(z-d_a+c)+(a-b))
-
-def differences(q): # Returns array of pairwise differences 
-    return q[:,None,:]-q
+def phi_a(d):
+    return 0.5*rho_h(d/r_a)*((a+b)*sig_grad(d-d_a+c)+(a-b))
 
 def f(dist):
     norm = sig_norm(dist)
-    dq = phi_a(norm)/(1+eps*norm)
-    dp = rho_h(norm/r_a)
+    dq = phi_a(norm)/(1+eps*norm) + 0.02 #c_q/num_boids
+    dp = rho_h(norm/r_a) + 0.01 #c_p/num_boids
     return dq,dp
 
-def uUpdate(q,p):
-    diff=differences(q)
-    diffp=differences(p)
-    dist = l2_norm(diff)
+def uUpdate(q,p,i):
+    diff = q[:,None,:] - q
+    diffp = p[:,None,:] - p
+    dist = l2_norm(diff,axis=2,keepdims=True)
     dq,dp = f(dist)
-    return np.sum(diff*dq,axis=0) + np.sum(dp*diffp,axis=0)
+    return np.sum(diff*dq+dp*diffp,axis=0) 
     
-# Gamma agent
-x=np.cos(np.linspace(0,np.pi*num_iters*dt,num_iters))
-y = np.zeros(num_iters)
-z = np.zeros(num_iters)
-dx=-np.pi*np.sin(np.linspace(0,np.pi*num_iters*dt,num_iters))
-dy = np.zeros(num_iters)
-dz = np.zeros(num_iters)
-q_g=np.stack((x,y,y),axis=1)
-p_g = np.stack((dx,dy,dz),axis=1)
+# Plot inter-agent forces
+X = np.linspace(0,1.5,100)
+Y,Z = f(X)
+plt.plot(Y)
+plt.plot(Z)
+plt.show()
+
+
+###########
+# Animation
+###########
 
 # Init
 q = np.random.normal(0.0,1.0,size=(num_boids,dim))
@@ -82,19 +82,12 @@ p = np.random.normal(0.0,1.0,size=(num_boids,dim))
 X = np.zeros((num_iters,num_boids,dim))
 V = np.zeros((num_iters,num_boids,dim))
 for i in range(num_iters):
-    z = uUpdate(q,p)
-    q+=p*dt
-    p+=(z-c_q*(q-q_g[i])-c_p*(p-p_g[i]))*dt
+    q , p = q+p*dt , p + uUpdate(q,p,i)*dt
     X[i,:,:] = q
     V[i,:,:] = p
 
-# Add the gamma agent
-X = np.concatenate((X,q_g[:,None,:]),axis=1) 
-V = np.concatenate((V,p_g[:,None,:]),axis=1)
-
 # Save array
-np.save(fname,[X,V])
-
+#np.save(fname,[X,V])
 
 # Animation
 flock = ScatterAnimation(ran = 2.0)
