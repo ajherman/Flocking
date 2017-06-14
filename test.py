@@ -5,7 +5,7 @@
 import sys
 sys.path.insert(0,"ClassDefinitions")
 import numpy as np
-from FlockAnimation import ScatterAnimation 
+from FlockAnimation import ScatterAnimation
 from FlockParameters import SimulationParams, AnimationParams
 from FlockSimulation import OlfatiFlockingSimulation, OlfatiFlockingSimulationTF
 
@@ -16,39 +16,38 @@ sim_params = SimulationParams()
 sim_params.set_num_boids(25)
 sim_params.set_num_iters(25)
 
-
 #######
 # Tests
 #######
 
 # Basic
-for run_method in ['NP','TF']:     
+for run_method in ['NP','TF']:
     for dim in [2,3]:
         print("Basic test on dimension " + str(dim) + " with " + run_method + ":  ", end ="")
-        
+
         try:
             if run_method == 'NP':
                 flock_sim = OlfatiFlockingSimulation()
-            
+
             elif run_method == 'TF':
                 flock_sim = OlfatiFlockingSimulationTF()
-            
+
             else:
                 assert("Invalid dimension given in test program")
-                
+
             # Set dimension
             sim_params.set_dim(dim)
 
             # Set gamma path
             sim_params.set_gamma_path('circle')
-            
+
             # Init points
             sim_params.set_q_init('random')
             sim_params.set_p_init('random')
-            
+
             # Set simulation parameters
             flock_sim.params = sim_params
-        
+
             # Init simulation
             flock_sim.initSim()
 
@@ -59,7 +58,7 @@ for run_method in ['NP','TF']:
             assert(np.shape(X) == (25,26,dim))
             assert(np.shape(V) == (25,26,dim))
             print("Pass!")
-        
+
         except:
             print("Fail.")
 

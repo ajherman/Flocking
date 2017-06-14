@@ -27,7 +27,7 @@ c_p = 5
 c_q = 10
 fname = "experiment_array"
 
-# Set animation parameters 
+# Set animation parameters
 ani_params = AnimationParams()
 ani_params.set_show(True)
 ani_params.set_save(False)
@@ -40,9 +40,9 @@ ani_params.set_quiver(False)
 def sig_norm(d):
     return (np.sqrt(1+eps*d**2)-1)/eps
 
-def sig_grad(d): 
+def sig_grad(d):
     return d/(np.sqrt(1+eps*d**2))
-    
+
 def rho_h(d):
     return  np.logical_and(d>=0,d<h)+np.logical_and(d<=1,d>=h)*(0.5*(1+np.cos(np.pi*(d-h)/(1-h))))
 
@@ -51,8 +51,14 @@ def phi_a(d):
 
 def f(dist):
     norm = sig_norm(dist)
-    dq = phi_a(norm)/(1+eps*norm) + 0.02 #c_q/num_boids
-    dp = rho_h(norm/r_a) + 0.01 #c_p/num_boids
+
+    # Alternate (simpler version)
+    dq = 0.8426*(phi_a(norm)/(1+eps*norm) + 0.02)*(1.-1./(1+np.exp(40-20*dist)))
+    dp = 1.-1./(1+np.exp(13-20*dist))
+
+    # Original from paper (basically)
+    # dq = phi_a(norm)/(1+eps*norm) + 0.02 #c_q/num_boids
+    # dp = rho_h(norm/r_a) # + 0.01 #c_p/num_boids
     return dq,dp
 
 def uUpdate(q,p,i):
@@ -60,15 +66,14 @@ def uUpdate(q,p,i):
     diffp = p[:,None,:] - p
     dist = l2_norm(diff,axis=2,keepdims=True)
     dq,dp = f(dist)
-    return np.sum(diff*dq+dp*diffp,axis=0) 
-    
+    return np.sum(diff*dq+dp*diffp,axis=0)
+
 # Plot inter-agent forces
 X = np.linspace(0,1.5,100)
 Y,Z = f(X)
-plt.plot(Y)
-plt.plot(Z)
+plt.plot(X,Y)
+plt.plot(X,Z)
 plt.show()
-
 
 ###########
 # Animation
@@ -96,4 +101,3 @@ flock.setQ(X)
 flock.setP(V)
 flock.initAnimation()
 flock.animate()
-
