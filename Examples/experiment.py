@@ -45,7 +45,6 @@ def sig_grad(d):
 
 def rho_h(d):
     return 1.-1./(1+np.exp(4.8-8*d))
-    # return  np.logical_and(d>=0,d<h)+np.logical_and(d<=1,d>=h)*(0.5*(1+np.cos(np.pi*(d-h)/(1-h))))
 
 def phi_a(d):
     return 0.5*rho_h(d/r_a)*((a+b)*sig_grad(d-d_a+c)+(a-b))
@@ -56,10 +55,6 @@ def f(dist):
     # Alternate (simpler version)
     dq = 0.8426*(phi_a(norm)/(1+eps*norm) + 0.02)*(1.-1./(1+np.exp(40-20*dist)))
     dp = 1.-1./(1+np.exp(13-20*dist))
-
-    # Original from paper (basically)
-    # dq = phi_a(norm)/(1+eps*norm) + 0.02 #c_q/num_boids
-    # dp = rho_h(norm/r_a) # + 0.01 #c_p/num_boids
 
     return dq,dp
 
