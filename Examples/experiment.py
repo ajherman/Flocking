@@ -44,7 +44,8 @@ def sig_grad(d):
     return d/(np.sqrt(1+eps*d**2))
 
 def rho_h(d):
-    return  np.logical_and(d>=0,d<h)+np.logical_and(d<=1,d>=h)*(0.5*(1+np.cos(np.pi*(d-h)/(1-h))))
+    return 1.-1./(1+np.exp(4.8-8*d))
+    # return  np.logical_and(d>=0,d<h)+np.logical_and(d<=1,d>=h)*(0.5*(1+np.cos(np.pi*(d-h)/(1-h))))
 
 def phi_a(d):
     return 0.5*rho_h(d/r_a)*((a+b)*sig_grad(d-d_a+c)+(a-b))
@@ -59,6 +60,7 @@ def f(dist):
     # Original from paper (basically)
     # dq = phi_a(norm)/(1+eps*norm) + 0.02 #c_q/num_boids
     # dp = rho_h(norm/r_a) # + 0.01 #c_p/num_boids
+
     return dq,dp
 
 def uUpdate(q,p,i):
@@ -73,6 +75,10 @@ X = np.linspace(0,1.5,100)
 Y,Z = f(X)
 plt.plot(X,Y)
 plt.plot(X,Z)
+W = rho_h(X)
+S = 1.-1./(1+np.exp(4.8-8*X))
+plt.plot(X,W)
+plt.plot(X,S)
 plt.show()
 
 ###########
