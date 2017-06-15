@@ -12,25 +12,33 @@ from matplotlib import pyplot as plt
 from numpy.linalg import norm as l2_norm
 
 # Set simulation parameters
+a = 10
+b = 15 #20
+c = 1 #0.2
+d = 1
+e = 5 #1
+
 dt = 0.01
-num_iters = 1000 #2500
-num_boids = 600 #550
+fps = 30
+num_iters = 500
+num_boids = 250 #400
 dim = 3
 fname = "experiment_array"
 
 # Set animation parameters
 ani_params = AnimationParams()
+ani_params.set_fps(fps)
 ani_params.set_show(True)
 ani_params.set_save(False)
-ani_params.set_quiver(False)
+ani_params.set_quiver(True)
 
 ###########
 # Functions
 ###########
 
 def f(dist):
-    dp = 1.-1./(1+np.exp(20*(0.75-dist)))
-    dq = (-0.2+1./(1+np.exp(10*(0.75-dist))))*dp
+    dp = 1.-1./(1+np.exp(b*(d-dist)))
+    dq = (-c+e/(1+np.exp(a*(d-dist))))*dp
     return dq,dp
 
 def uUpdate(q,p,i):
