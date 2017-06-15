@@ -12,19 +12,10 @@ from matplotlib import pyplot as plt
 from numpy.linalg import norm as l2_norm
 
 # Set simulation parameters
-a = 5
-b= 5
-c = 0
-r_a = 0.346786940882
-d_a = 0.242070103255
-eps = 0.1
-h = 0.2
 dt = 0.01
 num_iters = 1000 #2500
 num_boids = 600 #550
 dim = 3
-c_p = 5
-c_q = 10
 fname = "experiment_array"
 
 # Set animation parameters
@@ -37,25 +28,9 @@ ani_params.set_quiver(False)
 # Functions
 ###########
 
-def sig_norm(d):
-    return (np.sqrt(1+eps*d**2)-1)/eps
-
-def sig_grad(d):
-    return d/(np.sqrt(1+eps*d**2))
-
-def rho_h(d):
-    return 1.-1./(1+np.exp(4.8-8*d))
-
-def phi_a(d):
-    return 0.5*rho_h(d/r_a)*((a+b)*sig_grad(d-d_a+c)+(a-b))
-
 def f(dist):
-    norm = sig_norm(dist)
-
-    # Alternate (simpler version)
-    dq = 0.8426*(phi_a(norm)/(1+eps*norm) + 0.02)*(1.-1./(1+np.exp(40-20*dist)))
-    dp = 1.-1./(1+np.exp(13-20*dist))
-
+    dp = 1.-1./(1+np.exp(20*(0.75-dist)))
+    dq = (-0.2+1./(1+np.exp(10*(0.75-dist))))*dp
     return dq,dp
 
 def uUpdate(q,p,i):
@@ -66,14 +41,10 @@ def uUpdate(q,p,i):
     return np.sum(diff*dq+dp*diffp,axis=0)
 
 # Plot inter-agent forces
-X = np.linspace(0,1.5,100)
+X = np.linspace(0,2.5,100)
 Y,Z = f(X)
 plt.plot(X,Y)
 plt.plot(X,Z)
-W = rho_h(X)
-S = 1.-1./(1+np.exp(4.8-8*X))
-plt.plot(X,W)
-plt.plot(X,S)
 plt.show()
 
 ###########
@@ -81,8 +52,8 @@ plt.show()
 ###########
 
 # Init
-q = np.random.normal(0.0,1.0,size=(num_boids,dim))
-p = np.random.normal(0.0,1.0,size=(num_boids,dim))
+q = np.random.normal(0.0,0.8,size=(num_boids,dim))
+p = np.random.normal(0.0,0.5,size=(num_boids,dim))
 
 # Main
 X = np.zeros((num_iters,num_boids,dim))
