@@ -1,6 +1,6 @@
 # Authors: Ari Herman & Taiyo Terada
 
-# Displays counter example to lemma 3 from Olfati paper
+# This file simulates the basic exploding behavior and is quite similar to the flocking algorithm from the Olfati paper
 
 import sys
 sys.path.insert(0,"../ClassDefinitions")

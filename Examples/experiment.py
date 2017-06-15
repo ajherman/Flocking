@@ -1,6 +1,6 @@
 # Authors: Ari Herman & Taiyo Terada
 
-# Displays counter example to lemma 3 from Olfati paper
+# Simplified version of exploding behavior
 
 import sys
 sys.path.insert(0,"../ClassDefinitions")
