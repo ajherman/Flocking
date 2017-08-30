@@ -25,7 +25,7 @@ sim_params.c_q = 0
 sim_params.set_num_boids(4)
 sim_params.gamma_path = 'circle'
 sim_params.set_d(5.0)
-sim_params.set_r(10.0) 
+sim_params.set_r(10.0)
 sim_params.set_num_iters(1000)
 sim_params.get_save()
 # Triangle
@@ -84,4 +84,3 @@ plt.plot(dist(X,1,2))
 plt.plot(dist(X,1,3))
 plt.plot(dist(X,2,3))
 plt.show()
-

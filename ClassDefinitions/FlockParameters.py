@@ -29,7 +29,7 @@ class SimulationParams(Params):
         self.d_a = (np.sqrt(1+self.eps*self.d**2)-1)/self.eps
         self.r_a = (np.sqrt(1+self.eps*self.r**2)-1)/self.eps  
         self.c_qa=1
-        self.c_pa=.7
+        self.c_pa= 1 #.7
 
         # alpha-beta parameters
         self.d_p=0.6*self.d# d'
@@ -112,9 +112,9 @@ class SimulationParams(Params):
         self.gamma_path = gamma_path
     def get_gamma_path(self):
         if self.dim == 2:
-            gamma_path = input("Select path for gamma agent ['circle','eight']: ")
+            gamma_path = input("Select path for gamma agent ['circle','eight','static']: ")
         elif self.dim == 3:
-            gamma_path = input("Select path for gamma agent ['circle','wild']: ")
+            gamma_path = input("Select path for gamma agent ['circle','wild','static']: ")
         else:
             print("Invalid dimension")
             assert(False)

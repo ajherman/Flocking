@@ -58,8 +58,16 @@ flock_sim.params = sim_params
 # Init 
 flock_sim.initSim()
 
-# Run 
-X,V = flock_sim.runSim(beta=beta)
+# Run
+if run_method == 'NP':
+    X,V = flock_sim.runSim(beta=beta) # Numpy version
+
+elif run_method == 'TF':
+    X,V = flock_sim.runSim() # Tensorflow version (no beta option)
+
+else: 
+    print("Invalid run method.  Must select Numpy or Tensorflow. ['NP'/'TF']")
+    assert(False)
 
 
 #################
