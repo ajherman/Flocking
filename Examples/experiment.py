@@ -30,36 +30,15 @@ ani_params = AnimationParams()
 ani_params.set_fps(fps)
 ani_params.set_show(True)
 ani_params.set_save(False)
-ani_params.set_quiver(True)
+ani_params.set_quiver(False)
 
 ###########
 # Functions
 ###########
 
-<<<<<<< HEAD
-def sig_norm(d):
-    return (np.sqrt(1+eps*d**2)-1)/eps
-
-def sig_grad(d):
-    return d/(np.sqrt(1+eps*d**2))
-
-def rho_h(d):
-    return np.logical_and(d>=0,d<h)+np.logical_and(d<=1,d>=h)*(0.5*(1+np.cos(np.pi*(d-h)/(1-h))))
-
-def phi_a(d):
-    return 0.5*rho_h(d/r_a)*((a+b)*sig_grad(d-d_a+c)+(a-b))
-
-def f(dist):
-    norm = sig_norm(dist)
-
-    dq = phi_a(norm)/(1+eps*norm) + c_q/num_boids
-    dp = rho_h(norm/r_a) + c_p/num_boids
-
-=======
 def f(dist):
     dp = 1.-1./(1+np.exp(b*(d-dist)))
     dq = (-c+e/(1+np.exp(a*(d-dist))))*dp
->>>>>>> simple
     return dq,dp
 
 def uUpdate(q,p,i):
